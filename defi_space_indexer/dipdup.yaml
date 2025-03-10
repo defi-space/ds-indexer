@@ -1,0 +1,198 @@
+spec_version: 3.0
+package: defi_space_indexer
+
+logging: INFO
+
+database:
+  kind: postgres
+  host: ${POSTGRES_HOST:-db}
+  port: 5432
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASSWORD}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: http://${HASURA_HOST:-hasura}:8080
+  admin_secret: ${HASURA_SECRET}
+  allow_aggregations: ${HASURA_ALLOW_AGGREGATIONS:-true}
+  select_limit: ${HASURA_SELECT_LIMIT:-10000}
+  camel_case: ${HASURA_CAMEL_CASE:-true}
+
+datasources:
+  # subsquid:
+  #   kind: starknet.subsquid
+  #   url: ${SUBSQUID_URL:-https://v2.archive.subsquid.io/network/starknet-mainnet}
+  node:
+    kind: starknet.node
+    url: ${NODE_URL}/${NODE_API_KEY}
+    http:
+      ratelimit_rate: 3
+      ratelimit_period: 1
+      ratelimit_sleep: 1
+
+contracts:
+  amm_factory:
+    kind: starknet
+    address: '0x21a5bea2df843545653ab364ee8af85a958ceb7202522e7656de6c5eba15416'
+    typename: amm_factory
+
+  amm_pair:
+    kind: starknet
+    address: '0x5778b883e91641eb1088cef8cbda05d7988f5905990459ebcf2d58f3fa13825' # Template
+    typename: amm_pair
+
+  farming_factory:
+    kind: starknet
+    address: '0x163619d6c3d7657f182f7fad648fe562f8320f99324f13c3042265cbefa996e'
+    typename: farming_factory
+
+  farming_reactor:
+    kind: starknet
+    address: '0x4a3dc699224fd2b0f8e18341d714211610d77e67589bf00bee33a99c59d80ce' # Template
+    typename: farming_reactor
+
+indexes:
+  amm_factory_events:
+    kind: starknet.events
+    first_level: 545025
+    datasources:
+      # - subsquid
+      - node
+    handlers:
+      - callback: on_pair_created
+        contract: amm_factory
+        name: PairCreated
+      - callback: on_fees_receiver_updated
+        contract: amm_factory
+        name: FeesReceiverUpdated
+      - callback: on_owner_updated
+        contract: amm_factory
+        name: OwnerUpdated
+      - callback: on_pair_contract_class_hash_updated
+        contract: amm_factory
+        name: PairContractClassHashUpdated
+      - callback: on_factory_initialized
+        contract: amm_factory
+        name: FactoryInitialized
+
+  farming_factory_events:
+    kind: starknet.events
+    first_level: 545026
+    datasources:
+      # - subsquid
+      - node
+    handlers:
+      - callback: on_reactor_created
+        contract: farming_factory
+        name: ReactorCreated
+      - callback: on_powerplant_ownership_transferred
+        contract: farming_factory
+        name: OwnershipTransferred
+      - callback: on_reactor_class_hash_updated
+        contract: farming_factory
+        name: ReactorClassHashUpdated
+      - callback: on_powerplant_initialized
+        contract: farming_factory
+        name: PowerplantInitialized
+
+  # ---- For code generation only ----
+  # reactor_events_init:
+  #   template: reactor_events
+  #   values:
+  #     contract: farming_reactor
+  # pair_events_init:
+  #   template: pair_events
+  #   values:
+  #     contract: amm_pair
+
+templates:
+  pair_events:
+    kind: starknet.events
+    first_level: 545025
+    datasources:
+      # - subsquid
+      - node
+    handlers:
+      - callback: on_mint
+        contract: <contract>
+        name: Mint
+      - callback: on_burn
+        contract: <contract>
+        name: Burn
+      - callback: on_swap
+        contract: <contract>
+        name: Swap
+      - callback: on_sync
+        contract: <contract>
+        name: Sync
+      - callback: on_skim
+        contract: <contract>
+        name: Skim
+
+  reactor_events:
+    kind: starknet.events
+    first_level: 545026
+    datasources:
+      # - subsquid
+      - node
+    handlers:
+      - callback: on_deposit
+        contract: <contract>
+        name: Deposit
+      - callback: on_withdraw
+        contract: <contract>
+        name: Withdraw
+      - callback: on_harvest
+        contract: <contract>
+        name: Harvest
+      - callback: on_reward_added
+        contract: <contract>
+        name: RewardAdded
+      - callback: on_erc20_recovered
+        contract: <contract>
+        name: ERC20Recovered
+      - callback: on_unallocated_rewards_claimed
+        contract: <contract>
+        name: UnallocatedRewardsClaimed
+      - callback: on_penalty_receiver_updated
+        contract: <contract>
+        name: PenaltyReceiverUpdated
+      - callback: on_rewarder_added
+        contract: <contract>
+        name: RewarderAdded
+      - callback: on_rewarder_removed
+        contract: <contract>
+        name: RewarderRemoved
+      - callback: on_reactor_ownership_transferred
+        contract: <contract>
+        name: OwnershipTransferred
+
+hooks:
+  calculate_amm_metrics:
+    callback: calculate_amm_metrics
+    atomic: False
+    args:
+      factory_address: str | None
+      pair_address: str | None
+
+  calculate_farming_metrics:
+    callback: calculate_farming_metrics
+    atomic: False
+    args:
+      powerplant_address: str | None
+      reactor_address: str | None
+
+jobs:
+  amm_metrics_update:
+    hook: calculate_amm_metrics
+    interval: 60
+    args:
+      factory_address: null
+      pair_address: null
+
+  farming_metrics_update:
+    hook: calculate_farming_metrics
+    interval: 60
+    args:
+      powerplant_address: null
+      reactor_address: null

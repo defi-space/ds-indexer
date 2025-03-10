@@ -1,0 +1,903 @@
+[
+  {
+    "type": "impl",
+    "name": "ReactorImpl",
+    "interface_name": "qte_dex::yield_farming::src::Reactor::IReactor"
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "type": "core::integer::u128",
+        "name": "low"
+      },
+      {
+        "type": "core::integer::u128",
+        "name": "high"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "qte_dex::yield_farming::src::Reactor::Reward",
+    "members": [
+      {
+        "type": "core::integer::u256",
+        "name": "rewards_duration"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "period_finish"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reward_rate"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "last_update_time"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reward_per_token_stored"
+      },
+      {
+        "type": "core::integer::u8",
+        "name": "decimals"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "type": "()",
+        "name": "False"
+      },
+      {
+        "type": "()",
+        "name": "True"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "qte_dex::yield_farming::src::Reactor::IReactor",
+    "items": [
+      {
+        "name": "owner",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "total_deposited",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "balance_of",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "account"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_lp_token",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "penalty_duration",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "multiplier",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "withdraw_penalty",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "penalty_receiver",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "calculate_penalty",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "account"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "amount"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_user_penalty_end_time",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "user"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "last_time_reward_applicable",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "rewards_token"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "reward_per_token",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "rewards_token"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "earned",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "account"
+          },
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "rewards_token"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_reward_for_duration",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "rewards_token"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_reward_tokens",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::starknet::contract_address::ContractAddress>"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_reward_data",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "reward_token"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "qte_dex::yield_farming::src::Reactor::Reward"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_user_reward_per_token_paid",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "user"
+          },
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "reward_token"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_user_rewards",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "user"
+          },
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "reward_token"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_unallocated_rewards",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "rewards_token"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "is_rewarder",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "rewarder"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "add_reward",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "rewards_token"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "rewards_duration"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "reward_amount"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "recover_erc20",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "token_address"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "token_amount"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "set_penalty_receiver",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "penalty_receiver"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "transfer_ownership",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "new_owner"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "add_rewarder",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "rewarder"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "remove_rewarder",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "rewarder"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "claim_unallocated_rewards",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "rewards_token"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "deposit",
+        "inputs": [
+          {
+            "type": "core::integer::u256",
+            "name": "amount"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "withdraw",
+        "inputs": [
+          {
+            "type": "core::integer::u256",
+            "name": "amount"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "harvest",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "exit",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "owner"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "lp_token"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "penalty_duration"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "multiplier"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "withdraw_penalty"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "penalty_receiver"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::Deposit",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user_address",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "staked_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_staked",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "user_staked",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "multiplier",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "penalty_end_time",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::Withdraw",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user_address",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "staked_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "penalty_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_staked",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "user_staked",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "penalty_end_time",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::Harvest",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user_address",
+        "kind": "key"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "reward_token",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reward_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_staked",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "user_staked",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reward_per_token_stored",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::RewardAdded",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "reward_token",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reward_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reward_rate",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reward_duration",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "period_finish",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reward_per_token_stored",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "unallocated_rewards",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "rewarder",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::ERC20Recovered",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "token_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "token_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "to",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::UnallocatedRewardsClaimed",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "reward_token",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "claimer",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "unallocated_rewards",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::PenaltyReceiverUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "previous_receiver",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "new_receiver",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::RewarderAdded",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "rewarder",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::RewarderRemoved",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "rewarder",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::OwnershipTransferred",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "previous_owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "new_owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::yield_farming::src::Reactor::Reactor::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "type": "qte_dex::yield_farming::src::Reactor::Reactor::Deposit",
+        "name": "Deposit",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::yield_farming::src::Reactor::Reactor::Withdraw",
+        "name": "Withdraw",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::yield_farming::src::Reactor::Reactor::Harvest",
+        "name": "Harvest",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::yield_farming::src::Reactor::Reactor::RewardAdded",
+        "name": "RewardAdded",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::yield_farming::src::Reactor::Reactor::ERC20Recovered",
+        "name": "ERC20Recovered",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::yield_farming::src::Reactor::Reactor::UnallocatedRewardsClaimed",
+        "name": "UnallocatedRewardsClaimed",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::yield_farming::src::Reactor::Reactor::PenaltyReceiverUpdated",
+        "name": "PenaltyReceiverUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::yield_farming::src::Reactor::Reactor::RewarderAdded",
+        "name": "RewarderAdded",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::yield_farming::src::Reactor::Reactor::RewarderRemoved",
+        "name": "RewarderRemoved",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::yield_farming::src::Reactor::Reactor::OwnershipTransferred",
+        "name": "OwnershipTransferred",
+        "kind": "nested"
+      }
+    ]
+  }
+]

@@ -1,0 +1,813 @@
+[
+  {
+    "type": "impl",
+    "name": "Pair",
+    "interface_name": "qte_dex::amm::src::Pair::IPair"
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "type": "core::integer::u128",
+        "name": "low"
+      },
+      {
+        "type": "core::integer::u128",
+        "name": "high"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "qte_dex::amm::src::Pair::IPair",
+    "items": [
+      {
+        "name": "token0",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "token1",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_reserves",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "(core::integer::u256, core::integer::u256, core::integer::u64)"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "price_0_cumulative_last",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "price_1_cumulative_last",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "klast",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "mint",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "to"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "burn",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "to"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "(core::integer::u256, core::integer::u256)"
+          }
+        ],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "swap",
+        "inputs": [
+          {
+            "type": "core::integer::u256",
+            "name": "amount0Out"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "amount1Out"
+          },
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "to"
+          },
+          {
+            "type": "core::array::Array::<core::felt252>",
+            "name": "data"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "skim",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "to"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "sync",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      }
+    ]
+  },
+  {
+    "type": "impl",
+    "name": "ERC20MixinImpl",
+    "interface_name": "openzeppelin_token::erc20::interface::ERC20ABI"
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "type": "()",
+        "name": "False"
+      },
+      {
+        "type": "()",
+        "name": "True"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::byte_array::ByteArray",
+    "members": [
+      {
+        "type": "core::array::Array::<core::bytes_31::bytes31>",
+        "name": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "pending_word"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "pending_word_len"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "openzeppelin_token::erc20::interface::ERC20ABI",
+    "items": [
+      {
+        "name": "total_supply",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "balance_of",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "account"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "allowance",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "owner"
+          },
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "spender"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "transfer",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "recipient"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "amount"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "transfer_from",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "sender"
+          },
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "recipient"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "amount"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "approve",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "spender"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "amount"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "name",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::byte_array::ByteArray"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "symbol",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::byte_array::ByteArray"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "decimals",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u8"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "totalSupply",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "balanceOf",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "account"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "transferFrom",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "sender"
+          },
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "recipient"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "amount"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "external",
+        "type": "function"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "token0"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "token1"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "openzeppelin_token::erc20::erc20::ERC20Component::Transfer",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "from",
+        "kind": "key"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "to",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "value",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "openzeppelin_token::erc20::erc20::ERC20Component::Approval",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "owner",
+        "kind": "key"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "spender",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "value",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "openzeppelin_token::erc20::erc20::ERC20Component::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "type": "openzeppelin_token::erc20::erc20::ERC20Component::Transfer",
+        "name": "Transfer",
+        "kind": "nested"
+      },
+      {
+        "type": "openzeppelin_token::erc20::erc20::ERC20Component::Approval",
+        "name": "Approval",
+        "kind": "nested"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::amm::src::Pair::Pair::Mint",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "sender",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "balance0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "balance1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reserve0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reserve1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "user_liquidity",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_liquidity",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_supply",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::amm::src::Pair::Pair::Burn",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "sender",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "balance0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "balance1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reserve0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reserve1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "user_liquidity",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_liquidity",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_supply",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::amm::src::Pair::Pair::Swap",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "sender",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount0_in",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount1_in",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount0_out",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount1_out",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "balance0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "balance1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reserve0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reserve1",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::amm::src::Pair::Pair::Sync",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::integer::u256",
+        "name": "balance0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "balance1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reserve0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reserve1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "price_0_cumulative_last",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "price_1_cumulative_last",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::amm::src::Pair::Pair::Skim",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "sender",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "balance0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "balance1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reserve0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reserve1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount1",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "qte_dex::amm::src::Pair::Pair::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "type": "openzeppelin_token::erc20::erc20::ERC20Component::Event",
+        "name": "ERC20Event",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::amm::src::Pair::Pair::Mint",
+        "name": "Mint",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::amm::src::Pair::Pair::Burn",
+        "name": "Burn",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::amm::src::Pair::Pair::Swap",
+        "name": "Swap",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::amm::src::Pair::Pair::Sync",
+        "name": "Sync",
+        "kind": "nested"
+      },
+      {
+        "type": "qte_dex::amm::src::Pair::Pair::Skim",
+        "name": "Skim",
+        "kind": "nested"
+      }
+    ]
+  }
+]
