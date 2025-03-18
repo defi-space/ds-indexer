@@ -2,7 +2,7 @@
   {
     "type": "impl",
     "name": "PowerplantImpl",
-    "interface_name": "qte_dex::yield_farming::src::Powerplant::IPowerplant"
+    "interface_name": "ds::yield_farming::src::Powerplant::IPowerplant"
   },
   {
     "type": "struct",
@@ -20,7 +20,7 @@
   },
   {
     "type": "interface",
-    "name": "qte_dex::yield_farming::src::Powerplant::IPowerplant",
+    "name": "ds::yield_farming::src::Powerplant::IPowerplant",
     "items": [
       {
         "name": "get_owner",
@@ -65,7 +65,7 @@
         "inputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress",
-            "name": "lp_token"
+            "name": "lp_token_address"
           }
         ],
         "outputs": [
@@ -117,7 +117,7 @@
         "inputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress",
-            "name": "new_owner"
+            "name": "new_owner_address"
           }
         ],
         "outputs": [],
@@ -150,7 +150,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Powerplant::Powerplant::PowerplantInitialized",
+    "name": "ds::yield_farming::src::Powerplant::Powerplant::PowerplantInitialized",
     "kind": "struct",
     "members": [
       {
@@ -177,7 +177,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Powerplant::Powerplant::ReactorCreated",
+    "name": "ds::yield_farming::src::Powerplant::Powerplant::ReactorCreated",
     "kind": "struct",
     "members": [
       {
@@ -234,7 +234,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Powerplant::Powerplant::OwnershipTransferred",
+    "name": "ds::yield_farming::src::Powerplant::Powerplant::OwnershipTransferred",
     "kind": "struct",
     "members": [
       {
@@ -261,7 +261,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Powerplant::Powerplant::ReactorClassHashUpdated",
+    "name": "ds::yield_farming::src::Powerplant::Powerplant::ReactorClassHashUpdated",
     "kind": "struct",
     "members": [
       {
@@ -288,26 +288,26 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Powerplant::Powerplant::Event",
+    "name": "ds::yield_farming::src::Powerplant::Powerplant::Event",
     "kind": "enum",
     "variants": [
       {
-        "type": "qte_dex::yield_farming::src::Powerplant::Powerplant::PowerplantInitialized",
+        "type": "ds::yield_farming::src::Powerplant::Powerplant::PowerplantInitialized",
         "name": "PowerplantInitialized",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Powerplant::Powerplant::ReactorCreated",
+        "type": "ds::yield_farming::src::Powerplant::Powerplant::ReactorCreated",
         "name": "ReactorCreated",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Powerplant::Powerplant::OwnershipTransferred",
+        "type": "ds::yield_farming::src::Powerplant::Powerplant::OwnershipTransferred",
         "name": "OwnershipTransferred",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Powerplant::Powerplant::ReactorClassHashUpdated",
+        "type": "ds::yield_farming::src::Powerplant::Powerplant::ReactorClassHashUpdated",
         "name": "ReactorClassHashUpdated",
         "kind": "nested"
       }

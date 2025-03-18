@@ -2,7 +2,7 @@
   {
     "type": "impl",
     "name": "Pair",
-    "interface_name": "qte_dex::amm::src::Pair::IPair"
+    "interface_name": "ds::amm::src::Pair::IPair"
   },
   {
     "type": "struct",
@@ -20,7 +20,7 @@
   },
   {
     "type": "interface",
-    "name": "qte_dex::amm::src::Pair::IPair",
+    "name": "ds::amm::src::Pair::IPair",
     "items": [
       {
         "name": "token0",
@@ -125,11 +125,11 @@
         "inputs": [
           {
             "type": "core::integer::u256",
-            "name": "amount0Out"
+            "name": "amount0_out"
           },
           {
             "type": "core::integer::u256",
-            "name": "amount1Out"
+            "name": "amount1_out"
           },
           {
             "type": "core::starknet::contract_address::ContractAddress",
@@ -409,11 +409,11 @@
     "inputs": [
       {
         "type": "core::starknet::contract_address::ContractAddress",
-        "name": "token0"
+        "name": "token_0"
       },
       {
         "type": "core::starknet::contract_address::ContractAddress",
-        "name": "token1"
+        "name": "token_1"
       }
     ]
   },
@@ -480,7 +480,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Pair::Pair::Mint",
+    "name": "ds::amm::src::Pair::Pair::Mint",
     "kind": "struct",
     "members": [
       {
@@ -547,7 +547,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Pair::Pair::Burn",
+    "name": "ds::amm::src::Pair::Pair::Burn",
     "kind": "struct",
     "members": [
       {
@@ -614,7 +614,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Pair::Pair::Swap",
+    "name": "ds::amm::src::Pair::Pair::Swap",
     "kind": "struct",
     "members": [
       {
@@ -676,7 +676,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Pair::Pair::Sync",
+    "name": "ds::amm::src::Pair::Pair::Sync",
     "kind": "struct",
     "members": [
       {
@@ -723,7 +723,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Pair::Pair::Skim",
+    "name": "ds::amm::src::Pair::Pair::Skim",
     "kind": "struct",
     "members": [
       {
@@ -775,7 +775,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Pair::Pair::Event",
+    "name": "ds::amm::src::Pair::Pair::Event",
     "kind": "enum",
     "variants": [
       {
@@ -784,27 +784,27 @@
         "kind": "nested"
       },
       {
-        "type": "qte_dex::amm::src::Pair::Pair::Mint",
+        "type": "ds::amm::src::Pair::Pair::Mint",
         "name": "Mint",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::amm::src::Pair::Pair::Burn",
+        "type": "ds::amm::src::Pair::Pair::Burn",
         "name": "Burn",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::amm::src::Pair::Pair::Swap",
+        "type": "ds::amm::src::Pair::Pair::Swap",
         "name": "Swap",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::amm::src::Pair::Pair::Sync",
+        "type": "ds::amm::src::Pair::Pair::Sync",
         "name": "Sync",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::amm::src::Pair::Pair::Skim",
+        "type": "ds::amm::src::Pair::Pair::Skim",
         "name": "Skim",
         "kind": "nested"
       }

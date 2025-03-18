@@ -2,22 +2,22 @@
   {
     "type": "impl",
     "name": "Factory",
-    "interface_name": "qte_dex::amm::src::Factory::IFactory"
+    "interface_name": "ds::amm::src::Factory::IFactory"
   },
   {
     "type": "interface",
-    "name": "qte_dex::amm::src::Factory::IFactory",
+    "name": "ds::amm::src::Factory::IFactory",
     "items": [
       {
         "name": "get_pair",
         "inputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress",
-            "name": "token0"
+            "name": "token_0"
           },
           {
             "type": "core::starknet::contract_address::ContractAddress",
-            "name": "token1"
+            "name": "token_1"
           }
         ],
         "outputs": [
@@ -121,7 +121,7 @@
         "inputs": [
           {
             "type": "core::starknet::class_hash::ClassHash",
-            "name": "new_pair_contract_class"
+            "name": "new_pair_contract_class_hash"
           }
         ],
         "outputs": [],
@@ -142,7 +142,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Factory::Factory::FactoryInitialized",
+    "name": "ds::amm::src::Factory::Factory::FactoryInitialized",
     "kind": "struct",
     "members": [
       {
@@ -174,7 +174,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Factory::Factory::PairCreated",
+    "name": "ds::amm::src::Factory::Factory::PairCreated",
     "kind": "struct",
     "members": [
       {
@@ -216,7 +216,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Factory::Factory::FeesReceiverUpdated",
+    "name": "ds::amm::src::Factory::Factory::FeesReceiverUpdated",
     "kind": "struct",
     "members": [
       {
@@ -243,7 +243,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Factory::Factory::OwnerUpdated",
+    "name": "ds::amm::src::Factory::Factory::OwnerUpdated",
     "kind": "struct",
     "members": [
       {
@@ -270,7 +270,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Factory::Factory::PairContractClassHashUpdated",
+    "name": "ds::amm::src::Factory::Factory::PairContractClassHashUpdated",
     "kind": "struct",
     "members": [
       {
@@ -297,31 +297,31 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::amm::src::Factory::Factory::Event",
+    "name": "ds::amm::src::Factory::Factory::Event",
     "kind": "enum",
     "variants": [
       {
-        "type": "qte_dex::amm::src::Factory::Factory::FactoryInitialized",
+        "type": "ds::amm::src::Factory::Factory::FactoryInitialized",
         "name": "FactoryInitialized",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::amm::src::Factory::Factory::PairCreated",
+        "type": "ds::amm::src::Factory::Factory::PairCreated",
         "name": "PairCreated",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::amm::src::Factory::Factory::FeesReceiverUpdated",
+        "type": "ds::amm::src::Factory::Factory::FeesReceiverUpdated",
         "name": "FeesReceiverUpdated",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::amm::src::Factory::Factory::OwnerUpdated",
+        "type": "ds::amm::src::Factory::Factory::OwnerUpdated",
         "name": "OwnerUpdated",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::amm::src::Factory::Factory::PairContractClassHashUpdated",
+        "type": "ds::amm::src::Factory::Factory::PairContractClassHashUpdated",
         "name": "PairContractClassHashUpdated",
         "kind": "nested"
       }

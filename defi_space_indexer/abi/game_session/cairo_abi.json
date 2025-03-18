@@ -1,0 +1,802 @@
+[
+  {
+    "type": "impl",
+    "name": "GameSessionImpl",
+    "interface_name": "ds::game::src::GameSession::IGameSession"
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "type": "core::integer::u128",
+        "name": "low"
+      },
+      {
+        "type": "core::integer::u128",
+        "name": "high"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "type": "()",
+        "name": "False"
+      },
+      {
+        "type": "()",
+        "name": "True"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "ds::game::src::GameSession::Agent",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "address"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_staked"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "ds::game::src::GameSession::StakeWindow",
+    "members": [
+      {
+        "type": "core::integer::u64",
+        "name": "start_time"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "end_time"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "ds::game::src::GameSession::UserStake",
+    "members": [
+      {
+        "type": "core::integer::u256",
+        "name": "amount"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "agent_index"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "stake_window_index"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "ds::game::src::GameSession::IGameSession",
+    "items": [
+      {
+        "name": "stake",
+        "inputs": [
+          {
+            "type": "core::integer::u256",
+            "name": "amount"
+          },
+          {
+            "type": "core::integer::u32",
+            "name": "agent_index"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "unstake",
+        "inputs": [
+          {
+            "type": "core::integer::u256",
+            "name": "amount"
+          },
+          {
+            "type": "core::integer::u32",
+            "name": "agent_index"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "claim_and_exit",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "emergency_withdraw",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "end_game",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "suspend_game",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "set_fee_recipient",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "new_fee_recipient"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "is_game_over",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "is_game_suspended",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_agent",
+        "inputs": [
+          {
+            "type": "core::integer::u32",
+            "name": "agent_index"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "ds::game::src::GameSession::Agent"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_game_agents",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<ds::game::src::GameSession::Agent>"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_number_of_agents",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_agent_total_stakes",
+        "inputs": [
+          {
+            "type": "core::integer::u32",
+            "name": "agent_index"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_current_stake_window",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "(core::integer::u32, ds::game::src::GameSession::StakeWindow)"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "is_stake_window_active",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "is_session_stake_window_active",
+        "inputs": [
+          {
+            "type": "core::integer::u32",
+            "name": "stake_window_index"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_session_stake_window",
+        "inputs": [
+          {
+            "type": "core::integer::u32",
+            "name": "window_index"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "ds::game::src::GameSession::StakeWindow"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_number_of_session_stake_windows",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_user_stakes",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "user"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::array::Array::<ds::game::src::GameSession::UserStake>"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_user_stake_count",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "user"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_fee_recipient",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_platform_fee_percentage",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_burn_fee_percentage",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_total_fees_percentage",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_winning_threshold",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_token_win_condition_address",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_owner",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_user_stake_token_address",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_winning_agent_index",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_total_rewards",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_total_stakes",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user_stake_token_address"
+      },
+      {
+        "type": "core::array::Array::<ds::game::src::GameSession::StakeWindow>",
+        "name": "stake_windows"
+      },
+      {
+        "type": "core::array::Array::<core::starknet::contract_address::ContractAddress>",
+        "name": "agents_addresses"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "token_win_condition_address"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "token_win_condition_threshold"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "burn_fee_percentage"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "platform_fee_percentage"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::GameSuspended",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::GameOver",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::integer::u32",
+        "name": "winning_agent_index",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "burn_fee_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "platform_fee_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_fees_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_rewards",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::StakeWindowCreated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::integer::u32",
+        "name": "window_index",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "start_time",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "end_time",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::UserStaked",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "agent_index",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "window_index",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::UserUnstaked",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "agent_index",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "window_index",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::EmergencyWithdraw",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::RewardsClaimed",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::FeeRecipientUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "previous_recipient",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "new_recipient",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::GameInitialized",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user_stake_token_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "token_win_condition_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "token_win_condition_threshold",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "burn_fee_percentage",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "platform_fee_percentage",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "fee_recipient",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "number_of_stake_windows",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "number_of_agents",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "type": "ds::game::src::GameSession::GameSession::GameSuspended",
+        "name": "GameSuspended",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::GameOver",
+        "name": "GameOver",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::StakeWindowCreated",
+        "name": "StakeWindowCreated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::UserStaked",
+        "name": "UserStaked",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::UserUnstaked",
+        "name": "UserUnstaked",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::EmergencyWithdraw",
+        "name": "EmergencyWithdraw",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::RewardsClaimed",
+        "name": "RewardsClaimed",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::FeeRecipientUpdated",
+        "name": "FeeRecipientUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::GameInitialized",
+        "name": "GameInitialized",
+        "kind": "nested"
+      }
+    ]
+  }
+]

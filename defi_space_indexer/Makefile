@@ -6,6 +6,7 @@ MAKEFLAGS += --no-print-directory
 PACKAGE=defi_space_indexer
 TAG=latest
 COMPOSE=deploy/compose.yaml
+ENV_FILE=.env
 
 help:           ## Show this help (default)
 	@grep -Fh "##" $(MAKEFILE_LIST) | grep -Fv grep -F | sed -e 's/\\$$//' | sed -e 's/##//'
@@ -45,11 +46,11 @@ image:          ## Build Docker image
 	docker buildx build . -t ${PACKAGE}:${TAG} --load
 
 up:             ## Start Compose stack
-	docker-compose -f ${COMPOSE} up -d --build
-	docker-compose -f ${COMPOSE} logs -f
+	docker-compose -f ${COMPOSE} --env-file ${ENV_FILE} up -d --build
+	docker-compose -f ${COMPOSE} --env-file ${ENV_FILE} logs -f
 
 down:           ## Stop Compose stack
-	docker-compose -f ${COMPOSE} down
+	docker-compose -f ${COMPOSE} --env-file ${ENV_FILE} down
 
 prune:          ## Prune Docker resources
 	make down

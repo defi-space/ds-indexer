@@ -2,7 +2,7 @@
   {
     "type": "impl",
     "name": "ReactorImpl",
-    "interface_name": "qte_dex::yield_farming::src::Reactor::IReactor"
+    "interface_name": "ds::yield_farming::src::Reactor::IReactor"
   },
   {
     "type": "struct",
@@ -20,7 +20,7 @@
   },
   {
     "type": "struct",
-    "name": "qte_dex::yield_farming::src::Reactor::Reward",
+    "name": "ds::yield_farming::src::Reactor::Reward",
     "members": [
       {
         "type": "core::integer::u256",
@@ -64,7 +64,7 @@
   },
   {
     "type": "interface",
-    "name": "qte_dex::yield_farming::src::Reactor::IReactor",
+    "name": "ds::yield_farming::src::Reactor::IReactor",
     "items": [
       {
         "name": "owner",
@@ -93,7 +93,7 @@
         "inputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress",
-            "name": "account"
+            "name": "account_address"
           }
         ],
         "outputs": [
@@ -284,7 +284,7 @@
         ],
         "outputs": [
           {
-            "type": "qte_dex::yield_farming::src::Reactor::Reward"
+            "type": "ds::yield_farming::src::Reactor::Reward"
           }
         ],
         "state_mutability": "view",
@@ -335,7 +335,7 @@
         "inputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress",
-            "name": "rewards_token"
+            "name": "rewards_token_address"
           }
         ],
         "outputs": [
@@ -530,7 +530,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::Deposit",
+    "name": "ds::yield_farming::src::Reactor::Reactor::Deposit",
     "kind": "struct",
     "members": [
       {
@@ -572,7 +572,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::Withdraw",
+    "name": "ds::yield_farming::src::Reactor::Reactor::Withdraw",
     "kind": "struct",
     "members": [
       {
@@ -614,7 +614,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::Harvest",
+    "name": "ds::yield_farming::src::Reactor::Reactor::Harvest",
     "kind": "struct",
     "members": [
       {
@@ -656,7 +656,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::RewardAdded",
+    "name": "ds::yield_farming::src::Reactor::Reactor::RewardAdded",
     "kind": "struct",
     "members": [
       {
@@ -708,7 +708,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::ERC20Recovered",
+    "name": "ds::yield_farming::src::Reactor::Reactor::ERC20Recovered",
     "kind": "struct",
     "members": [
       {
@@ -735,7 +735,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::UnallocatedRewardsClaimed",
+    "name": "ds::yield_farming::src::Reactor::Reactor::UnallocatedRewardsClaimed",
     "kind": "struct",
     "members": [
       {
@@ -767,7 +767,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::PenaltyReceiverUpdated",
+    "name": "ds::yield_farming::src::Reactor::Reactor::PenaltyReceiverUpdated",
     "kind": "struct",
     "members": [
       {
@@ -789,7 +789,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::RewarderAdded",
+    "name": "ds::yield_farming::src::Reactor::Reactor::RewarderAdded",
     "kind": "struct",
     "members": [
       {
@@ -806,7 +806,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::RewarderRemoved",
+    "name": "ds::yield_farming::src::Reactor::Reactor::RewarderRemoved",
     "kind": "struct",
     "members": [
       {
@@ -823,7 +823,7 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::OwnershipTransferred",
+    "name": "ds::yield_farming::src::Reactor::Reactor::OwnershipTransferred",
     "kind": "struct",
     "members": [
       {
@@ -845,56 +845,56 @@
   },
   {
     "type": "event",
-    "name": "qte_dex::yield_farming::src::Reactor::Reactor::Event",
+    "name": "ds::yield_farming::src::Reactor::Reactor::Event",
     "kind": "enum",
     "variants": [
       {
-        "type": "qte_dex::yield_farming::src::Reactor::Reactor::Deposit",
+        "type": "ds::yield_farming::src::Reactor::Reactor::Deposit",
         "name": "Deposit",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Reactor::Reactor::Withdraw",
+        "type": "ds::yield_farming::src::Reactor::Reactor::Withdraw",
         "name": "Withdraw",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Reactor::Reactor::Harvest",
+        "type": "ds::yield_farming::src::Reactor::Reactor::Harvest",
         "name": "Harvest",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Reactor::Reactor::RewardAdded",
+        "type": "ds::yield_farming::src::Reactor::Reactor::RewardAdded",
         "name": "RewardAdded",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Reactor::Reactor::ERC20Recovered",
+        "type": "ds::yield_farming::src::Reactor::Reactor::ERC20Recovered",
         "name": "ERC20Recovered",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Reactor::Reactor::UnallocatedRewardsClaimed",
+        "type": "ds::yield_farming::src::Reactor::Reactor::UnallocatedRewardsClaimed",
         "name": "UnallocatedRewardsClaimed",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Reactor::Reactor::PenaltyReceiverUpdated",
+        "type": "ds::yield_farming::src::Reactor::Reactor::PenaltyReceiverUpdated",
         "name": "PenaltyReceiverUpdated",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Reactor::Reactor::RewarderAdded",
+        "type": "ds::yield_farming::src::Reactor::Reactor::RewarderAdded",
         "name": "RewarderAdded",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Reactor::Reactor::RewarderRemoved",
+        "type": "ds::yield_farming::src::Reactor::Reactor::RewarderRemoved",
         "name": "RewarderRemoved",
         "kind": "nested"
       },
       {
-        "type": "qte_dex::yield_farming::src::Reactor::Reactor::OwnershipTransferred",
+        "type": "ds::yield_farming::src::Reactor::Reactor::OwnershipTransferred",
         "name": "OwnershipTransferred",
         "kind": "nested"
       }

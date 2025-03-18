@@ -1,0 +1,428 @@
+[
+  {
+    "type": "impl",
+    "name": "GameFactoryImpl",
+    "interface_name": "ds::game::src::GameFactory::IGameFactory"
+  },
+  {
+    "type": "struct",
+    "name": "ds::game::src::GameSession::StakeWindow",
+    "members": [
+      {
+        "type": "core::integer::u64",
+        "name": "start_time"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "end_time"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "type": "core::integer::u128",
+        "name": "low"
+      },
+      {
+        "type": "core::integer::u128",
+        "name": "high"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "ds::game::src::GameFactory::GameSessionInfo",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "address"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "index"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "type": "()",
+        "name": "False"
+      },
+      {
+        "type": "()",
+        "name": "True"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "ds::game::src::GameFactory::IGameFactory",
+    "items": [
+      {
+        "name": "create_game_session",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "user_stake_token_address"
+          },
+          {
+            "type": "core::array::Array::<ds::game::src::GameSession::StakeWindow>",
+            "name": "user_stake_windows"
+          },
+          {
+            "type": "core::array::Array::<core::starknet::contract_address::ContractAddress>",
+            "name": "agent_addresses"
+          },
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "token_win_condition_address"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "token_win_condition_threshold"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "burn_fee_percentage"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "platform_fee_percentage"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "set_owner",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "new_owner"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "update_game_session_class_hash",
+        "inputs": [
+          {
+            "type": "core::starknet::class_hash::ClassHash",
+            "name": "new_class_hash"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "get_owner",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_game_session_class_hash",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::class_hash::ClassHash"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_game_session_count",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_game_session_by_index",
+        "inputs": [
+          {
+            "type": "core::integer::u32",
+            "name": "index"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_game_session_index_by_address",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "address"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_active_game_sessions",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<ds::game::src::GameFactory::GameSessionInfo>"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_all_game_sessions",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<ds::game::src::GameFactory::GameSessionInfo>"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "is_game_session",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "address"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "is_game_session_active",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "game_session_address"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "type": "core::starknet::class_hash::ClassHash",
+        "name": "game_session_class_hash"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameFactory::GameFactory::FactoryInitialized",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::class_hash::ClassHash",
+        "name": "game_session_class_hash",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameFactory::GameFactory::GameSessionCreated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "game_session",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "token_win_condition",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "stake_token",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "token_win_condition_threshold",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "burn_fee_percentage",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "platform_fee_percentage",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "creator",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "session_index",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "total_sessions",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameFactory::GameFactory::OwnershipTransferred",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "previous_owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "new_owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameFactory::GameFactory::GameSessionClassHashUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::class_hash::ClassHash",
+        "name": "old_hash",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::class_hash::ClassHash",
+        "name": "new_hash",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameFactory::GameFactory::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "type": "ds::game::src::GameFactory::GameFactory::FactoryInitialized",
+        "name": "FactoryInitialized",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameFactory::GameFactory::GameSessionCreated",
+        "name": "GameSessionCreated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameFactory::GameFactory::OwnershipTransferred",
+        "name": "OwnershipTransferred",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameFactory::GameFactory::GameSessionClassHashUpdated",
+        "name": "GameSessionClassHashUpdated",
+        "kind": "nested"
+      }
+    ]
+  }
+]

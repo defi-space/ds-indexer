@@ -33,28 +33,38 @@ datasources:
 contracts:
   amm_factory:
     kind: starknet
-    address: '0x21a5bea2df843545653ab364ee8af85a958ceb7202522e7656de6c5eba15416'
+    address: '0x35e1be3829dbdf1b66d6bd78c0c4a7293881668c508c6e3a93f4448767603ae'
     typename: amm_factory
 
   amm_pair:
     kind: starknet
-    address: '0x5778b883e91641eb1088cef8cbda05d7988f5905990459ebcf2d58f3fa13825' # Template
+    address: '0x477c6c84be0d31493b62aa19b19af81a03dfbcfea3749662aa18352a49b589b' # Template
     typename: amm_pair
 
   farming_factory:
     kind: starknet
-    address: '0x163619d6c3d7657f182f7fad648fe562f8320f99324f13c3042265cbefa996e'
+    address: '0x27443aba611f9fee5f3bb15de8f166a3e47b598e41ae78dfb7eef4a90b7b3be'
     typename: farming_factory
 
   farming_reactor:
     kind: starknet
-    address: '0x4a3dc699224fd2b0f8e18341d714211610d77e67589bf00bee33a99c59d80ce' # Template
+    address: '0x410ff65cc03b29d172519e51a4ee56cd8a2dfb38a1ff095231e758219b4e78b' # Template
     typename: farming_reactor
+
+  game_factory:
+    kind: starknet
+    address: '0x1906b6347c4c5c2fce8ab9f63798edcebeacd5544f693433ded651e6d7e17a'
+    typename: game_factory
+
+  game_session:
+    kind: starknet
+    address: '0x156dbe8fb8c845452ae68bafdbb05232712e6943269a01556fafaf20d3334eb' # Template
+    typename: game_session
 
 indexes:
   amm_factory_events:
     kind: starknet.events
-    first_level: 545025
+    first_level: 605250
     datasources:
       # - subsquid
       - node
@@ -77,7 +87,7 @@ indexes:
 
   farming_factory_events:
     kind: starknet.events
-    first_level: 545026
+    first_level: 605251
     datasources:
       # - subsquid
       - node
@@ -95,6 +105,26 @@ indexes:
         contract: farming_factory
         name: PowerplantInitialized
 
+  game_factory_events:
+    kind: starknet.events
+    first_level: 605480
+    datasources:
+      # - subsquid
+      - node
+    handlers:
+      - callback: on_game_factory_initialized
+        contract: game_factory
+        name: FactoryInitialized
+      - callback: on_game_session_created
+        contract: game_factory
+        name: GameSessionCreated
+      - callback: on_game_ownership_transferred
+        contract: game_factory
+        name: OwnershipTransferred
+      - callback: on_game_session_class_hash_updated
+        contract: game_factory
+        name: GameSessionClassHashUpdated
+
   # ---- For code generation only ----
   # reactor_events_init:
   #   template: reactor_events
@@ -104,11 +134,15 @@ indexes:
   #   template: pair_events
   #   values:
   #     contract: amm_pair
+  # game_session_events_init:
+  #   template: game_session_events
+  #   values:
+  #     contract: game_session
 
 templates:
   pair_events:
     kind: starknet.events
-    first_level: 545025
+    first_level: 605250
     datasources:
       # - subsquid
       - node
@@ -131,7 +165,7 @@ templates:
 
   reactor_events:
     kind: starknet.events
-    first_level: 545026
+    first_level: 605251
     datasources:
       # - subsquid
       - node
@@ -167,6 +201,41 @@ templates:
         contract: <contract>
         name: OwnershipTransferred
 
+  game_session_events:
+    kind: starknet.events
+    first_level: 605480
+    datasources:
+      # - subsquid
+      - node
+    handlers:
+      - callback: on_game_suspended
+        contract: <contract>
+        name: GameSuspended
+      - callback: on_game_over
+        contract: <contract>
+        name: GameOver
+      - callback: on_stake_window_created
+        contract: <contract>
+        name: StakeWindowCreated
+      - callback: on_user_staked
+        contract: <contract>
+        name: UserStaked
+      - callback: on_user_unstaked
+        contract: <contract>
+        name: UserUnstaked
+      - callback: on_emergency_withdraw
+        contract: <contract>
+        name: EmergencyWithdraw
+      - callback: on_rewards_claimed
+        contract: <contract>
+        name: RewardsClaimed
+      - callback: on_fee_recipient_updated
+        contract: <contract>
+        name: FeeRecipientUpdated
+      - callback: on_game_initialized
+        contract: <contract>
+        name: GameInitialized
+
 hooks:
   calculate_amm_metrics:
     callback: calculate_amm_metrics
@@ -182,6 +251,13 @@ hooks:
       powerplant_address: str | None
       reactor_address: str | None
 
+  calculate_game_metrics:
+    callback: calculate_game_metrics
+    atomic: False
+    args:
+      factory_address: str | None
+      session_address: str | None
+
 jobs:
   amm_metrics_update:
     hook: calculate_amm_metrics
@@ -196,3 +272,10 @@ jobs:
     args:
       powerplant_address: null
       reactor_address: null
+
+  game_metrics_update:
+    hook: calculate_game_metrics
+    interval: 60
+    args:
+      factory_address: null
+      session_address: null

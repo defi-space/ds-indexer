@@ -12,8 +12,10 @@ services:
       - 9000
     command: ["-c", "dipdup.yaml", "-c", "configs/dipdup.compose.yaml", "run"]
     depends_on:
-      - db
-      - hasura
+      db:
+        condition: service_healthy
+      hasura:
+        condition: service_started
 
   db:
     image: postgres:15
@@ -38,8 +40,10 @@ services:
     ports:
       - "${HASURA_HOST_PORT:-8080}:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: always
+    env_file: .env
     environment:
       - HASURA_GRAPHQL_DATABASE_URL=postgres://dipdup:${POSTGRES_PASSWORD}@db:5432/dipdup
       - HASURA_GRAPHQL_ADMIN_SECRET=${HASURA_SECRET}

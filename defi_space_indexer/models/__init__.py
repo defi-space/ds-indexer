@@ -21,6 +21,16 @@ from defi_space_indexer.models.farming_models import (
     RewardEvent,
 )
 
+from defi_space_indexer.models.game_models import (
+    # Core Models
+    GameFactory,
+    GameSession,
+    StakeWindow,
+    UserGameStake,
+    # Event Models
+    GameEvent,
+)
+
 __all__ = [
     # AMM Core Models
     'Factory',
@@ -39,4 +49,13 @@ __all__ = [
     # Farming Event Models
     'StakeEvent',
     'RewardEvent',
+    
+    # Game Core Models
+    'GameFactory',
+    'GameSession',
+    'StakeWindow',
+    'UserGameStake',
+    
+    # Game Event Models
+    'GameEvent',
 ]

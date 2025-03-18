@@ -15,7 +15,7 @@
 !**/.keep
 pdm.lock
 
-!env.example
+!.env.example
 !install.sh
 !scripts/*
 # Add Python code
