@@ -21,7 +21,6 @@ class Factory(Model):
     """
     address = fields.TextField(primary_key=True)  # ContractAddress
     num_of_pairs = fields.IntField()
-    total_value_locked_usd = fields.BigIntField(null=True)  # Derived from pair TVLs
     
     # Config with history
     owner = fields.TextField()  # Current owner
@@ -71,15 +70,6 @@ class Pair(Model):
     price_0_cumulative_last = fields.BigIntField()
     price_1_cumulative_last = fields.BigIntField()
     block_timestamp_last = fields.BigIntField()
-    
-    # Derived Metrics
-    token0_price = fields.BigIntField(null=True)
-    token1_price = fields.BigIntField(null=True)
-    volume_24h = fields.BigIntField(null=True)
-    tvl_usd = fields.BigIntField(null=True)
-    apy_24h = fields.BigIntField(null=True)
-    accumulated_fees_token0 = fields.BigIntField(null=True)
-    accumulated_fees_token1 = fields.BigIntField(null=True)
 
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()
@@ -92,8 +82,8 @@ class Pair(Model):
 
 class LiquidityPosition(Model):
     """
-    Tracks a user's liquidity position in a specific pair.
-    Represents the current state of a user's LP tokens and their history.
+    Tracks an agent's liquidity position in a specific pair.
+    Represents the current state of an agent's LP tokens and their history.
     
     Key responsibilities:
     - Tracks current LP token balance
@@ -103,7 +93,7 @@ class LiquidityPosition(Model):
     Differs from LiquidityEvent:
     - Stores current position vs individual events
     - Maintains cumulative amounts vs single transactions
-    - Tracks user-specific metrics vs raw events
+    - Tracks agent-specific metrics vs raw events
     
     Updated by:
     - Mint events (deposits)
@@ -112,7 +102,7 @@ class LiquidityPosition(Model):
     """
     id = fields.IntField(primary_key=True)
     pair_address = fields.TextField()  # ContractAddress
-    user_address = fields.TextField()  # ContractAddress
+    agent_address = fields.TextField()  # ContractAddress
     
     # Current Position State
     liquidity = fields.DecimalField(max_digits=100, decimal_places=0)  # Current LP token balance
@@ -122,10 +112,6 @@ class LiquidityPosition(Model):
     deposits_token1 = fields.DecimalField(max_digits=100, decimal_places=0)  # Cumulative token1 deposits
     withdrawals_token0 = fields.DecimalField(max_digits=100, decimal_places=0, null=True)  # Cumulative token0 withdrawals
     withdrawals_token1 = fields.DecimalField(max_digits=100, decimal_places=0, null=True)  # Cumulative token1 withdrawals
-    
-    # Derived metrics
-    usd_value = fields.BigIntField(null=True)  # Current position value in USD
-    apy_earned = fields.BigIntField(null=True)  # Historical APY earned
     
     # Timestamps
     created_at = fields.BigIntField()  # First deposit timestamp
@@ -158,7 +144,7 @@ class LiquidityEvent(Model):
     
     Used for:
     - Historical analysis
-    - User activity tracking
+    - Agent activity tracking
     - Volume calculations
     - Position updates
     """
@@ -198,7 +184,7 @@ class SwapEvent(Model):
     Used for:
     - Volume calculations
     - Price impact analysis
-    - User trading history
+    - Agent trading history
     - Market analysis
     """
     id = fields.IntField(primary_key=True)

@@ -37,12 +37,12 @@ async def on_mint(
     # Update or create position
     position = await LiquidityPosition.get_or_none(
         pair_address=event.data.from_address,
-        user_address=hex(event.payload.sender),
+        agent_address=hex(event.payload.sender),
     )
     if position is None:
         position = LiquidityPosition(
             pair_address=event.data.from_address,
-            user_address=hex(event.payload.sender),
+            agent_address=hex(event.payload.sender),
             liquidity=Decimal(event.payload.user_liquidity),
             deposits_token0=Decimal(event.payload.amount0),
             deposits_token1=Decimal(event.payload.amount1),

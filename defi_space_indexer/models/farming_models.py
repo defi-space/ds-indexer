@@ -26,7 +26,6 @@ class Powerplant(Model):
     address = fields.TextField(primary_key=True)  # ContractAddress
     
     reactor_count = fields.BigIntField()
-    total_value_locked_usd = fields.BigIntField(null=True)  # Derived from reactor TVLs
     
     # Config with history
     owner = fields.TextField()
@@ -55,7 +54,7 @@ class Reactor(Model):
     
     Relationships:
     - Created by and linked to Powerplant
-    - Has many UserStakes
+    - Has many AgentStakes
     - Distributes multiple reward tokens
     """
     address = fields.TextField(primary_key=True)  # ContractAddress
@@ -90,10 +89,10 @@ class Reactor(Model):
     )
 
 
-class UserStake(Model):
+class AgentStake(Model):
     """
-    Tracks a user's stake in a specific reactor.
-    Represents the current state of a user's staked LP tokens and rewards.
+    Tracks an agent's stake in a specific reactor.
+    Represents the current state of an agent's staked LP tokens and rewards.
     
     Key responsibilities:
     - Tracks staked LP token amount
@@ -113,7 +112,7 @@ class UserStake(Model):
     """
     id = fields.IntField(primary_key=True)
     reactor_address = fields.TextField()  # ContractAddress
-    user_address = fields.TextField()  # ContractAddress
+    agent_address = fields.TextField()  # ContractAddress
     
     # Current Position State
     staked_amount = fields.DecimalField(max_digits=100, decimal_places=0)
@@ -129,14 +128,14 @@ class UserStake(Model):
     
     # Relationships
     reactor: fields.ForeignKeyField[Reactor] = fields.ForeignKeyField(
-        'models.Reactor', related_name='user_stakes'
+        'models.Reactor', related_name='agent_stakes'
     )
 
 class StakeEventType(Enum):
     DEPOSIT = "DEPOSIT"
     WITHDRAW = "WITHDRAW"
 
-class StakeEvent(Model):
+class AgentStakeEvent(Model):
     """
     Records individual stake/unstake events.
     Captures raw staking event data for historical tracking.
@@ -146,14 +145,14 @@ class StakeEvent(Model):
     - Tracks penalty applications
     - Maintains staking history
     
-    Differs from UserStake:
+    Differs from AgentStake:
     - Stores individual events vs current state
     - Records raw amounts vs cumulative totals
     - Tracks penalties per action vs timeframes
     
     Used for:
     - Historical analysis
-    - User activity tracking
+    - Agent activity tracking
     - TVL calculations
     - Position updates
     """
@@ -162,7 +161,7 @@ class StakeEvent(Model):
     created_at = fields.BigIntField()
     
     event_type = fields.EnumField(StakeEventType)
-    user_address = fields.TextField()
+    agent_address = fields.TextField()
     staked_amount = fields.DecimalField(max_digits=100, decimal_places=0)
     penalty_amount = fields.DecimalField(max_digits=100, decimal_places=0, null=True)  # For withdrawals
     
@@ -170,8 +169,8 @@ class StakeEvent(Model):
     reactor: fields.ForeignKeyField[Reactor] = fields.ForeignKeyField(
         'models.Reactor', related_name='stake_events'
     )
-    stake: fields.ForeignKeyField[UserStake] = fields.ForeignKeyField(
-        'models.UserStake', related_name='events'
+    stake: fields.ForeignKeyField[AgentStake] = fields.ForeignKeyField(
+        'models.AgentStake', related_name='events'
     )
 
 
@@ -197,16 +196,15 @@ class RewardEvent(Model):
     Used for:
     - APR calculations
     - Reward distribution tracking
-    - User earnings history
+    - Agent earnings history
     - Protocol metrics
     """
     id = fields.IntField(primary_key=True)
     transaction_hash = fields.TextField()
     created_at = fields.BigIntField()
 
-    
     event_type = fields.EnumField(RewardEventType)
-    user_address = fields.TextField(null=True)  # For harvests
+    agent_address = fields.TextField(null=True)  # For harvests
     reward_token = fields.TextField()
     reward_amount = fields.DecimalField(max_digits=100, decimal_places=0)
     

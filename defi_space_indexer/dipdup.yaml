@@ -237,20 +237,6 @@ templates:
         name: GameInitialized
 
 hooks:
-  calculate_amm_metrics:
-    callback: calculate_amm_metrics
-    atomic: False
-    args:
-      factory_address: str | None
-      pair_address: str | None
-
-  calculate_farming_metrics:
-    callback: calculate_farming_metrics
-    atomic: False
-    args:
-      powerplant_address: str | None
-      reactor_address: str | None
-
   calculate_game_metrics:
     callback: calculate_game_metrics
     atomic: False
@@ -259,20 +245,6 @@ hooks:
       session_address: str | None
 
 jobs:
-  amm_metrics_update:
-    hook: calculate_amm_metrics
-    interval: 60
-    args:
-      factory_address: null
-      pair_address: null
-
-  farming_metrics_update:
-    hook: calculate_farming_metrics
-    interval: 60
-    args:
-      powerplant_address: null
-      reactor_address: null
-
   game_metrics_update:
     hook: calculate_game_metrics
     interval: 60

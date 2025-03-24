@@ -15,9 +15,9 @@ from defi_space_indexer.models.farming_models import (
     # Core Models
     Powerplant,
     Reactor,
-    UserStake,
+    AgentStake,
     # Event Models
-    StakeEvent,
+    AgentStakeEvent,
     RewardEvent,
 )
 
@@ -26,7 +26,7 @@ from defi_space_indexer.models.game_models import (
     GameFactory,
     GameSession,
     StakeWindow,
-    UserGameStake,
+    UserStake,
     # Event Models
     GameEvent,
 )
@@ -44,17 +44,17 @@ __all__ = [
     # Farming Core Models
     'Powerplant',
     'Reactor',
-    'UserStake',
+    'AgentStake',
     
     # Farming Event Models
-    'StakeEvent',
+    'AgentStakeEvent',
     'RewardEvent',
     
     # Game Core Models
     'GameFactory',
     'GameSession',
     'StakeWindow',
-    'UserGameStake',
+    'UserStake',
     
     # Game Event Models
     'GameEvent',

@@ -1,6 +1,6 @@
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.farming_models import Reactor, UserStake, StakeEvent
+from defi_space_indexer.models.farming_models import Reactor, AgentStake, AgentStakeEvent
 from defi_space_indexer.types.farming_reactor.starknet_events.withdraw import WithdrawPayload
 from decimal import Decimal
 
@@ -16,9 +16,9 @@ async def on_withdraw(
     reactor.updated_at = event.payload.block_timestamp
     await reactor.save()
     
-    stake = await UserStake.get_or_none(
+    stake = await AgentStake.get_or_none(
         reactor_address=event.data.from_address,
-        user_address=hex(event.payload.user_address),
+        agent_address=hex(event.payload.user_address),
     )
     if stake is None:
        ctx.logger.info(f"Stake not found: {event.data.from_address} {hex(event.payload.user_address)}")
@@ -28,10 +28,10 @@ async def on_withdraw(
     stake.updated_at = event.payload.block_timestamp
     await stake.save()
     
-    stake_event = StakeEvent(
+    stake_event = AgentStakeEvent(
         transaction_hash=event.data.transaction_hash,
         event_type='WITHDRAW',
-        user_address=hex(event.payload.user_address),
+        agent_address=hex(event.payload.user_address),
         staked_amount=Decimal(event.payload.staked_amount),
         penalty_amount=Decimal(event.payload.penalty_amount),
         created_at=event.payload.block_timestamp,

@@ -1,6 +1,6 @@
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.game_models import GameSession, UserGameStake, GameEvent, GameEventType
+from defi_space_indexer.models.game_models import GameSession, UserStake, GameEvent, GameEventType
 from defi_space_indexer.types.game_session.starknet_events.rewards_claimed import RewardsClaimedPayload
 
 async def on_rewards_claimed(
@@ -35,7 +35,7 @@ async def on_rewards_claimed(
     await reward_event.save()
     
     # Update claimed rewards for all user stakes in the session
-    user_stakes = await UserGameStake.filter(
+    user_stakes = await UserStake.filter(
         session_address=event.data.from_address,
         user_address=user_address
     )

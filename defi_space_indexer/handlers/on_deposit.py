@@ -1,6 +1,6 @@
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.farming_models import Reactor, UserStake, StakeEvent
+from defi_space_indexer.models.farming_models import Reactor, AgentStake, AgentStakeEvent
 from defi_space_indexer.types.farming_reactor.starknet_events.deposit import DepositPayload
 from decimal import Decimal
 
@@ -28,14 +28,14 @@ async def on_deposit(
     reactor.updated_at = event.payload.block_timestamp
     await reactor.save()
     
-    stake = await UserStake.get_or_none(
+    stake = await AgentStake.get_or_none(
         reactor_address=event.data.from_address,
-        user_address=hex(event.payload.user_address),
+        agent_address=hex(event.payload.user_address),
     )
     if stake is None:
-        stake = UserStake(
+        stake = AgentStake(
             reactor_address=event.data.from_address,
-            user_address=hex(event.payload.user_address),
+            agent_address=hex(event.payload.user_address),
             staked_amount=Decimal(event.payload.staked_amount),
             reward_per_token_paid={},
             rewards={},
@@ -50,10 +50,10 @@ async def on_deposit(
         stake.updated_at = event.payload.block_timestamp
     await stake.save()
     
-    stake_event = StakeEvent(
+    stake_event = AgentStakeEvent(
         transaction_hash=event.data.transaction_hash,
         event_type='DEPOSIT',
-        user_address=hex(event.payload.user_address),
+        agent_address=hex(event.payload.user_address),
         staked_amount=Decimal(event.payload.staked_amount),
         created_at=event.payload.block_timestamp,
         reactor=reactor,

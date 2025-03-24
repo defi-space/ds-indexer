@@ -125,7 +125,7 @@ class StakeWindow(Model):
     )
 
 
-class UserGameStake(Model):
+class UserStake(Model):
     """
     Tracks a user's stake in a specific game session.
     Represents the current state of a user's staked tokens and potential rewards.
@@ -134,11 +134,6 @@ class UserGameStake(Model):
     - Tracks staked token amount per agent
     - Records claimed rewards
     - Manages agent selections
-    
-    Differs from UserStake:
-    - Tracks agent selection vs generic staking
-    - Rewards based on winning vs continuous distribution
-    - Fixed windows vs continuous staking
     """
     id = fields.IntField(primary_key=True)
     session_address = fields.TextField()  # ContractAddress
@@ -197,6 +192,6 @@ class GameEvent(Model):
     session: fields.ForeignKeyField[GameSession] = fields.ForeignKeyField(
         'models.GameSession', related_name='game_events'
     )
-    user_stake: fields.ForeignKeyField[UserGameStake] = fields.ForeignKeyField(
-        'models.UserGameStake', related_name='events', null=True
+    user_stake: fields.ForeignKeyField[UserStake] = fields.ForeignKeyField(
+        'models.UserStake', related_name='events', null=True
     )

@@ -1,6 +1,6 @@
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.game_models import GameSession, UserGameStake, GameEvent, GameEventType, StakeWindow
+from defi_space_indexer.models.game_models import GameSession, UserStake, GameEvent, GameEventType, StakeWindow
 from defi_space_indexer.types.game_session.starknet_events.user_unstaked import UserUnstakedPayload
 
 async def on_user_unstaked(
@@ -25,7 +25,7 @@ async def on_user_unstaked(
     window_index = event.payload.window_index
     
     # Get user stake
-    user_stake = await UserGameStake.get_or_none(
+    user_stake = await UserStake.get_or_none(
         session_address=event.data.from_address,
         user_address=user_address,
         agent_index=agent_index
