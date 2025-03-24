@@ -33,38 +33,38 @@ datasources:
 contracts:
   amm_factory:
     kind: starknet
-    address: '0x35e1be3829dbdf1b66d6bd78c0c4a7293881668c508c6e3a93f4448767603ae'
+    address: ${AMM_FACTORY_ADDRESS}
     typename: amm_factory
 
   amm_pair:
     kind: starknet
-    address: '0x477c6c84be0d31493b62aa19b19af81a03dfbcfea3749662aa18352a49b589b' # Template
+    address: ${AMM_PAIR_ADDRESS} # Template
     typename: amm_pair
 
   farming_factory:
     kind: starknet
-    address: '0x27443aba611f9fee5f3bb15de8f166a3e47b598e41ae78dfb7eef4a90b7b3be'
+    address: ${FARMING_FACTORY_ADDRESS}
     typename: farming_factory
 
   farming_reactor:
     kind: starknet
-    address: '0x410ff65cc03b29d172519e51a4ee56cd8a2dfb38a1ff095231e758219b4e78b' # Template
+    address: ${FARMING_REACTOR_ADDRESS} # Template
     typename: farming_reactor
 
   game_factory:
     kind: starknet
-    address: '0x2d8931c0204835a2acf4d5737c80a7f4d94e9a70aa5e0dab9798c19272bfef5'
+    address: ${GAME_FACTORY_ADDRESS}
     typename: game_factory
 
   game_session:
     kind: starknet
-    address: '0x699c162e7c722d07e04294350352576c92624d68228abf2be6098719ab9883a' # Template
+    address: ${GAME_SESSION_ADDRESS} # Template
     typename: game_session
 
 indexes:
   amm_factory_events:
     kind: starknet.events
-    first_level: 605250
+    first_level: ${AMM_FACTORY_FIRST_LEVEL}
     datasources:
       # - subsquid
       - node
@@ -87,7 +87,7 @@ indexes:
 
   farming_factory_events:
     kind: starknet.events
-    first_level: 605251
+    first_level: ${FARMING_FACTORY_FIRST_LEVEL}
     datasources:
       # - subsquid
       - node
@@ -107,7 +107,7 @@ indexes:
 
   game_factory_events:
     kind: starknet.events
-    first_level: 621296
+    first_level: ${GAME_FACTORY_FIRST_LEVEL}
     datasources:
       # - subsquid
       - node
@@ -142,7 +142,7 @@ indexes:
 templates:
   pair_events:
     kind: starknet.events
-    first_level: 605250
+    first_level: ${AMM_FACTORY_FIRST_LEVEL}
     datasources:
       # - subsquid
       - node
@@ -165,7 +165,7 @@ templates:
 
   reactor_events:
     kind: starknet.events
-    first_level: 605251
+    first_level: ${FARMING_FACTORY_FIRST_LEVEL}
     datasources:
       # - subsquid
       - node
@@ -203,7 +203,7 @@ templates:
 
   game_session_events:
     kind: starknet.events
-    first_level: 621296
+    first_level: ${GAME_FACTORY_FIRST_LEVEL}
     datasources:
       # - subsquid
       - node
