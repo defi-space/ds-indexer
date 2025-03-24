@@ -53,12 +53,12 @@ contracts:
 
   game_factory:
     kind: starknet
-    address: '0x1906b6347c4c5c2fce8ab9f63798edcebeacd5544f693433ded651e6d7e17a'
+    address: '0x2d8931c0204835a2acf4d5737c80a7f4d94e9a70aa5e0dab9798c19272bfef5'
     typename: game_factory
 
   game_session:
     kind: starknet
-    address: '0x156dbe8fb8c845452ae68bafdbb05232712e6943269a01556fafaf20d3334eb' # Template
+    address: '0x699c162e7c722d07e04294350352576c92624d68228abf2be6098719ab9883a' # Template
     typename: game_session
 
 indexes:
@@ -107,7 +107,7 @@ indexes:
 
   game_factory_events:
     kind: starknet.events
-    first_level: 605480
+    first_level: 621296
     datasources:
       # - subsquid
       - node
@@ -203,7 +203,7 @@ templates:
 
   game_session_events:
     kind: starknet.events
-    first_level: 605480
+    first_level: 621296
     datasources:
       # - subsquid
       - node
