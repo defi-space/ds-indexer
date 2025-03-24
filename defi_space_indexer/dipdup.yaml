@@ -243,11 +243,20 @@ hooks:
     args:
       factory_address: str | None
       session_address: str | None
+  active_staking_window:
+    callback: active_staking_window
+    atomic: False
+    args:
+      update_all: bool
+      session_address: str | None
 
 jobs:
   game_metrics_update:
     hook: calculate_game_metrics
     interval: 60
+  active_staking_window:
+    hook: active_staking_window
+    interval: 30
     args:
-      factory_address: null
+      update_all: true
       session_address: null

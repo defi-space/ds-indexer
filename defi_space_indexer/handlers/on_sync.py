@@ -27,10 +27,3 @@ async def on_sync(
     pair.updated_at = event.payload.block_timestamp
 
     await pair.save()
-    
-    # Trigger metrics calculation
-    await ctx.fire_hook(
-        'calculate_amm_metrics',
-        pair_address=event.data.from_address,
-        wait=False  # Don't block the handler
-    )

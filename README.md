@@ -202,8 +202,7 @@ defi_space_indexer/
 │   ├── on_mint.py
 │   └── ...
 ├── hooks/                # Periodic jobs and callbacks
-│   ├── calculate_amm_metrics.py
-│   ├── calculate_farming_metrics.py
+│   ├── active_staking_window.py
 │   └── ...
 ├── models/               # Data models
 │   ├── amm_models.py

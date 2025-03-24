@@ -22,6 +22,7 @@ async def on_game_suspended(
     # Update game session status
     session.is_suspended = True
     session.updated_at = event.payload.block_timestamp
+    session.ended_at = event.payload.block_timestamp
     
     # Record the suspension in config history
     session.config_history.append({

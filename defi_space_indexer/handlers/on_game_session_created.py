@@ -57,6 +57,7 @@ async def on_game_session_created(
         fee_recipient=hex(event.payload.factory_address),  # Default to factory as recipient
         number_of_stake_windows=0,  # Will be set by GameInitialized event
         number_of_agents=0,  # Will be set by GameInitialized event
+        current_window_index=None,
         is_suspended=False,
         is_over=False,
         total_staked=0,
@@ -70,4 +71,10 @@ async def on_game_session_created(
     # Update factory
     factory.num_of_sessions = event.payload.total_sessions
     factory.updated_at = event.payload.block_timestamp
-    await factory.save() 
+    await factory.save()
+
+    await ctx.fire_hook(
+        'active_staking_window',
+        update_all=False,
+        session_address=session_address
+    )

@@ -60,10 +60,3 @@ async def on_deposit(
         stake=stake,
     )
     await stake_event.save()
-    
-    # Recalculate farming metrics
-    await ctx.fire_hook(
-        'calculate_farming_metrics',
-        reactor_address=event.data.from_address,
-        wait=False
-    )

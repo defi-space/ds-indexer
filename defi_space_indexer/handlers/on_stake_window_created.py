@@ -31,9 +31,9 @@ async def on_stake_window_created(
         session=session,
     )
     await window.save()
-    
-    # Update game session current window index if this is a new window
-    if event.payload.window_index > session.current_window_index:
-        session.current_window_index = event.payload.window_index
-        session.updated_at = event.payload.block_timestamp
-        await session.save() 
+
+    await ctx.fire_hook(
+        'active_staking_window',
+        update_all=False,
+        session_address=event.data.from_address
+    )

@@ -75,7 +75,7 @@ class GameSession(Model):
     is_over = fields.BooleanField(default=False)
     winning_agent_index = fields.IntField(null=True)
     total_staked = fields.DecimalField(max_digits=100, decimal_places=0)
-    current_window_index = fields.IntField(default=0)
+    current_window_index = fields.IntField(null=True)
     
     # Game results
     total_rewards = fields.DecimalField(max_digits=100, decimal_places=0, null=True)
@@ -191,7 +191,4 @@ class GameEvent(Model):
     # Relationships
     session: fields.ForeignKeyField[GameSession] = fields.ForeignKeyField(
         'models.GameSession', related_name='game_events'
-    )
-    user_stake: fields.ForeignKeyField[UserStake] = fields.ForeignKeyField(
-        'models.UserStake', related_name='events', null=True
     )

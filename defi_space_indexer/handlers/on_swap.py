@@ -46,10 +46,3 @@ async def on_swap(
         pair=pair,
     )
     await swap_event.save()
-    
-    # Update metrics after significant events
-    await ctx.fire_hook(
-        'calculate_amm_metrics',
-        pair_address=event.data.from_address,
-        wait=False
-    )
