@@ -11,8 +11,8 @@ async def on_reward_state_updated(
     # Extract data from event payload
     user_address = f'0x{event.payload.user_address:x}'
     reward_token_address = f'0x{event.payload.reward_token:x}'
-    reward_per_token_paid = event.payload.reward_per_token_paid
-    rewards = event.payload.rewards
+    reward_per_token_paid = str(event.payload.reward_per_token_paid)  # Convert to string to handle large integers
+    rewards = str(event.payload.rewards)  # Convert to string to handle large integers
     block_timestamp = event.payload.block_timestamp
     
     # Get farm address from event data
@@ -39,8 +39,8 @@ async def on_reward_state_updated(
         agent_stake.rewards = {}
     
     # Update reward state
-    agent_stake.reward_per_token_paid[reward_token_address] = reward_per_token_paid
-    agent_stake.rewards[reward_token_address] = rewards
+    agent_stake.reward_per_token_paid[reward_token_address] = reward_per_token_paid  # Already a string
+    agent_stake.rewards[reward_token_address] = rewards  # Already a string
     agent_stake.updated_at = block_timestamp
     
     await agent_stake.save()
@@ -64,8 +64,8 @@ async def on_reward_state_updated(
         reward_token_address=reward_token_address,
         farm_address=farm_address,
         defaults={
-            'pending_rewards': rewards,
-            'reward_per_token_paid': reward_per_token_paid,
+            'pending_rewards': rewards,  # Already a string
+            'reward_per_token_paid': reward_per_token_paid,  # Already a string
             'created_at': block_timestamp,
             'updated_at': block_timestamp,
             'agent_stake': agent_stake,
@@ -74,8 +74,8 @@ async def on_reward_state_updated(
     )
     
     if not created:
-        reward_per_agent.pending_rewards = rewards
-        reward_per_agent.reward_per_token_paid = reward_per_token_paid
+        reward_per_agent.pending_rewards = rewards  # Already a string
+        reward_per_agent.reward_per_token_paid = reward_per_token_paid  # Already a string
         reward_per_agent.updated_at = block_timestamp
         reward_per_agent.reward = reward  # Ensure reward relationship is maintained
         await reward_per_agent.save()

@@ -22,6 +22,7 @@ from defi_space_indexer.models.farms_models import (
     Rewarder,
     # Event Models
     AgentStakeEvent,
+    StakeEventType,
     RewardEvent,
     RewardEventType,
 )
@@ -68,6 +69,7 @@ __all__ = [
     
     # Farming Event Models
     'AgentStakeEvent',
+    'StakeEventType',
     'RewardEvent',
     'RewardEventType',
     

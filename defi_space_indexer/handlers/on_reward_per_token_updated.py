@@ -10,8 +10,8 @@ async def on_reward_per_token_updated(
 ) -> None:
     # Extract data from event payload
     reward_token_address = f'0x{event.payload.reward_token:x}'
-    previous_value = event.payload.previous_value
-    new_value = event.payload.new_value
+    previous_value = str(event.payload.previous_value)  # Convert to string to handle large integers
+    new_value = str(event.payload.new_value)  # Convert to string to handle large integers
     block_timestamp = event.payload.block_timestamp
     
     # Get farm address from event data
@@ -29,7 +29,7 @@ async def on_reward_per_token_updated(
     
     # Get existing reward token state or create new one
     reward_token_state = farm.active_rewards.get(reward_token_address, {})
-    reward_token_state['stored'] = new_value
+    reward_token_state['stored'] = new_value  # Already a string
     farm.active_rewards[reward_token_address] = reward_token_state
     
     farm.updated_at = block_timestamp
@@ -42,7 +42,7 @@ async def on_reward_per_token_updated(
     )
     
     if reward:
-        reward.reward_per_token_stored = new_value
+        reward.reward_per_token_stored = new_value  # Already a string
         reward.last_update_time = block_timestamp
         reward.updated_at = block_timestamp
         await reward.save()
