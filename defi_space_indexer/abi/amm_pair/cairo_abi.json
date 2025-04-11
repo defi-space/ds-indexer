@@ -168,7 +168,7 @@
   {
     "type": "impl",
     "name": "ERC20MixinImpl",
-    "interface_name": "openzeppelin_token::erc20::interface::ERC20ABI"
+    "interface_name": "openzeppelin_token::erc20::interface::IERC20Mixin"
   },
   {
     "type": "enum",
@@ -204,7 +204,7 @@
   },
   {
     "type": "interface",
-    "name": "openzeppelin_token::erc20::interface::ERC20ABI",
+    "name": "openzeppelin_token::erc20::interface::IERC20Mixin",
     "items": [
       {
         "name": "total_supply",
@@ -775,6 +775,129 @@
   },
   {
     "type": "event",
+    "name": "ds::amm::src::Pair::Pair::ConfigUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::felt252",
+        "name": "field_name",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "old_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "new_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "pair_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::amm::src::Pair::Pair::ReserveUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::integer::u256",
+        "name": "old_reserve0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "old_reserve1",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "new_reserve0",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "new_reserve1",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "pair_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::amm::src::Pair::Pair::KLastUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::integer::u256",
+        "name": "old_klast",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "new_klast",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "pair_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::amm::src::Pair::Pair::PriceAccumulatorUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::integer::u256",
+        "name": "price_0_cumulative_last",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "price_1_cumulative_last",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "pair_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
     "name": "ds::amm::src::Pair::Pair::Event",
     "kind": "enum",
     "variants": [
@@ -806,6 +929,26 @@
       {
         "type": "ds::amm::src::Pair::Pair::Skim",
         "name": "Skim",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::amm::src::Pair::Pair::ConfigUpdated",
+        "name": "ConfigUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::amm::src::Pair::Pair::ReserveUpdated",
+        "name": "ReserveUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::amm::src::Pair::Pair::KLastUpdated",
+        "name": "KLastUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::amm::src::Pair::Pair::PriceAccumulatorUpdated",
+        "name": "PriceAccumulatorUpdated",
         "kind": "nested"
       }
     ]

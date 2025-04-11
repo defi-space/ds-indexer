@@ -28,6 +28,9 @@ class Factory(Model):
     pair_contract_class_hash = fields.TextField()  # Current implementation
     config_history = fields.JSONField()  # List of {field, old_value, new_value, timestamp}
     
+    # Game integration
+    game_session_id = fields.IntField()  # ID for game session integration
+    
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()
 
@@ -70,6 +73,9 @@ class Pair(Model):
     price_0_cumulative_last = fields.BigIntField()
     price_1_cumulative_last = fields.BigIntField()
     block_timestamp_last = fields.BigIntField()
+
+    # Game integration
+    game_session_id = fields.IntField()  # ID for game session integration
 
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()
@@ -189,14 +195,18 @@ class SwapEvent(Model):
     """
     id = fields.IntField(primary_key=True)
     transaction_hash = fields.TextField()
-    created_at = fields.BigIntField()
+    created_at = fields.BigIntField()  # Timestamp
+    block_number = fields.BigIntField(null=True)  # Block number
     
-    sender = fields.TextField()
+    sender = fields.TextField()  # Address that initiated the swap
+    to = fields.TextField(null=True)  # Address that received the output tokens (may be different from sender)
     amount0_in = fields.DecimalField(max_digits=100, decimal_places=0)
     amount1_in = fields.DecimalField(max_digits=100, decimal_places=0)
     amount0_out = fields.DecimalField(max_digits=100, decimal_places=0)
     amount1_out = fields.DecimalField(max_digits=100, decimal_places=0)
-
+    
+    # Analytics fields
+    price_impact = fields.DecimalField(max_digits=100, decimal_places=18, null=True)  # Calculated price impact
     
     # Relationships
     pair: fields.ForeignKeyField[Pair] = fields.ForeignKeyField(

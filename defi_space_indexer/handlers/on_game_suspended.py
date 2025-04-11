@@ -1,33 +1,39 @@
+from defi_space_indexer import models as models
+from defi_space_indexer.types.game_session.starknet_events.game_suspended import GameSuspendedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.game_models import GameSession
-from defi_space_indexer.types.game_session.starknet_events.game_suspended import GameSuspendedPayload
+
 
 async def on_game_suspended(
     ctx: HandlerContext,
     event: StarknetEvent[GameSuspendedPayload],
 ) -> None:
-    """Handle GameSuspended event from GameSession contract.
+    # Extract data from event payload
+    block_timestamp = event.payload.block_timestamp
     
-    Updates game session status when suspended. Important for:
-    - Tracking game lifecycle
-    - Monitoring exceptional status changes
-    - Alerting to administration actions
-    """
-    session = await GameSession.get_or_none(address=event.data.from_address)
-    if session is None:
-        ctx.logger.info(f"GameSession not found: {event.data.from_address}")
+    # Get session address from event data
+    session_address = event.data.from_address
+    transaction_hash = event.data.transaction_hash
+    
+    # Get game session from database
+    session = await models.GameSession.get_or_none(address=session_address)
+    if not session:
+        ctx.logger.warning(f"Game session {session_address} not found when suspending game")
         return
     
-    # Update game session status
-    session.is_suspended = True
-    session.updated_at = event.payload.block_timestamp
-    session.ended_at = event.payload.block_timestamp
+    # Update the game session
+    session.game_suspended = True
+    session.updated_at = block_timestamp
+    await session.save()
     
-    # Record the suspension in config history
-    session.config_history.append({
-        'action': 'game_suspended',
-        'timestamp': event.payload.block_timestamp
-    })
+    # Create a game event record for the game suspended event
+    await models.GameEvent.create(
+        transaction_hash=transaction_hash,
+        created_at=block_timestamp,
+        event_type=models.GameEventType.GAME_SUSPENDED,
+        user_address=session.owner,  # Use the owner address since this is a system event
+        amount=0,  # No amount involved in suspension
+        session=session,
+    )
     
-    await session.save() 
+    ctx.logger.info(f"Game suspended: session={session_address}")

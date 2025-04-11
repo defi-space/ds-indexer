@@ -11,5 +11,5 @@ class OwnershipTransferredPayload(BaseModel):
     )
     previous_owner: int
     new_owner: int
-    powerplant: int
+    farm_factory: int
     block_timestamp: int

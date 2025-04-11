@@ -1,20 +1,57 @@
+from defi_space_indexer import models as models
+from defi_space_indexer.types.farming_farm.starknet_events.unallocated_rewards_claimed import UnallocatedRewardsClaimedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.farming_models import Reactor
-from defi_space_indexer.types.farming_reactor.starknet_events.unallocated_rewards_claimed import UnallocatedRewardsClaimedPayload
-from decimal import Decimal
+
 
 async def on_unallocated_rewards_claimed(
     ctx: HandlerContext,
     event: StarknetEvent[UnallocatedRewardsClaimedPayload],
 ) -> None:
-    """Handle UnallocatedRewardsClaimed event from Reactor contract."""
-    reactor = await Reactor.get_or_none(address=event.data.from_address)
-    if reactor is None:
-        ctx.logger.info(f"Reactor not found: {event.data.from_address}")
+    # Extract data from event payload
+    reward_token_address = f'0x{event.payload.reward_token:x}'
+    amount = event.payload.amount
+    claimer_address = f'0x{event.payload.claimer:x}'
+    unallocated_rewards = event.payload.unallocated_rewards
+    block_timestamp = event.payload.block_timestamp
+    
+    # Get farm address from event data
+    farm_address = event.data.from_address
+    
+    # Get farm from database
+    farm = await models.Farm.get_or_none(address=farm_address)
+    if not farm:
+        ctx.logger.warning(f"Farm {farm_address} not found when claiming unallocated rewards")
         return
-    # Update unallocated rewards in active_rewards
-    if event.payload.reward_token in reactor.active_rewards:
-        reactor.active_rewards[hex(event.payload.reward_token)]['unallocated'] = Decimal(event.payload.unallocated_rewards)
-    reactor.updated_at = event.payload.block_timestamp
-    await reactor.save() 
+    
+    # Update reward in the database if it exists
+    reward = await models.Reward.get_or_none(
+        address=reward_token_address,
+        farm_address=farm_address
+    )
+    
+    if reward:
+        # Update unallocated rewards
+        reward.unallocated_rewards = unallocated_rewards
+        reward.updated_at = block_timestamp
+        await reward.save()
+        
+        # Create a reward event to track this claim
+        transaction_hash = event.data.transaction_hash
+        await models.RewardEvent.create(
+            transaction_hash=transaction_hash,
+            created_at=block_timestamp,
+            event_type=models.RewardEventType.REWARD_ADDED,  # Using REWARD_ADDED as there's no specific type for unallocated claims
+            agent_address=claimer_address,
+            reward_token=reward_token_address,
+            reward_amount=amount,
+            reward_rate=None,
+            reward_duration=None,
+            period_finish=None,
+            farm=farm,
+        )
+    
+    ctx.logger.info(
+        f"Unallocated rewards claimed: farm={farm_address}, token={reward_token_address}, "
+        f"amount={amount}, claimer={claimer_address}, remaining={unallocated_rewards}"
+    )

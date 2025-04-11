@@ -12,5 +12,6 @@ class FactoryInitializedPayload(BaseModel):
     factory_address: int
     owner: int
     fee_to: int
+    game_session_id: int
     pair_contract_class_hash: int
     block_timestamp: int

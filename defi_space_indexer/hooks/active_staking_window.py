@@ -26,14 +26,14 @@ async def active_staking_window(
     # Process active sessions (not suspended, not over)
     # Query filter depends on whether we're updating specific session or all
     if update_all or session_address is None:
-        active_sessions = await GameSession.filter(is_over=False, is_suspended=False)
+        active_sessions = await GameSession.filter(game_over=False, game_suspended=False)
     else:
-        active_sessions = await GameSession.filter(address=session_address, is_over=False, is_suspended=False)
+        active_sessions = await GameSession.filter(address=session_address, game_over=False, game_suspended=False)
     
     # Process active sessions
     for session in active_sessions:
         # Get all windows for this session
-        windows = await StakeWindow.filter(session_address=session.address).order_by('window_index')
+        windows = await StakeWindow.filter(session_address=session.address).order_by('index')
         
         if not windows:
             continue
@@ -61,14 +61,14 @@ async def active_staking_window(
             else:
                 # Find highest window index where current_timestamp >= end_time
                 current_window_index = max(
-                    (w.window_index for w in windows if current_timestamp >= w.end_time), 
-                    default=session.current_window_index or 0
+                    (w.index for w in windows if current_timestamp >= w.end_time), 
+                    default=session.current_window_index if hasattr(session, 'current_window_index') else 0
                 )
         else:
-            current_window_index = current_window.window_index
+            current_window_index = current_window.index
         
         # Update session if needed
-        if current_window_index != session.current_window_index:
+        if not hasattr(session, 'current_window_index') or current_window_index != session.current_window_index:
             session.current_window_index = current_window_index
             session.updated_at = current_timestamp
             await session.save()
@@ -76,11 +76,11 @@ async def active_staking_window(
     # Process inactive sessions (suspended or over) to make sure windows are properly marked as inactive
     if update_all or session_address is None:
         # Use Q objects to create proper OR condition
-        inactive_sessions = await GameSession.filter(Q(is_over=True) | Q(is_suspended=True))
+        inactive_sessions = await GameSession.filter(Q(game_over=True) | Q(game_suspended=True))
     else:
         # For specific session address with OR condition
         inactive_sessions = await GameSession.filter(
-            Q(address=session_address) & (Q(is_over=True) | Q(is_suspended=True))
+            Q(address=session_address) & (Q(game_over=True) | Q(game_suspended=True))
         )
     
     # Set all windows for inactive sessions to is_active=False

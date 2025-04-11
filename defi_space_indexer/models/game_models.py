@@ -20,13 +20,15 @@ class GameFactory(Model):
     - Records game session implementations
     """
     address = fields.TextField(primary_key=True)  # ContractAddress
-    num_of_sessions = fields.IntField()
-    total_value_locked_usd = fields.BigIntField(null=True)  # Derived from session TVLs
-    
-    # Config with history
     owner = fields.TextField()  # Current owner
     game_session_class_hash = fields.TextField()  # Current implementation
+    game_session_count = fields.IntField()  # Number of game sessions
+    
+    # Config with history
     config_history = fields.JSONField()  # List of {field, old_value, new_value, timestamp}
+    
+    # Lists
+    game_sessions_list = fields.JSONField(default=list)  # Array of game session addresses
     
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()
@@ -43,7 +45,7 @@ class GameSession(Model):
     - Controls game lifecycle
     - Tracks staking metrics
     
-    Differs from Reactor:
+    Differs from Farm:
     - Uses competing stakes model vs yield farming
     - Distributes rewards to winners vs all stakers
     - Has defined game lifecycle vs continuous staking
@@ -55,12 +57,11 @@ class GameSession(Model):
     """
     address = fields.TextField(primary_key=True)  # ContractAddress
     
-    # Creation data (from GameSessionCreatedEvent)
-    factory_address = fields.TextField()
-    stake_token_address = fields.TextField()
+    # Creation data
+    game_factory = fields.TextField()  # Factory address
+    user_stake_token_address = fields.TextField()
     token_win_condition_address = fields.TextField()
     token_win_condition_threshold = fields.DecimalField(max_digits=100, decimal_places=0)
-    session_index = fields.IntField()
     
     # Game configuration
     owner = fields.TextField()
@@ -71,17 +72,15 @@ class GameSession(Model):
     number_of_agents = fields.IntField()
     
     # Current state
-    is_suspended = fields.BooleanField(default=False)
-    is_over = fields.BooleanField(default=False)
+    game_suspended = fields.BooleanField(default=False)
+    game_over = fields.BooleanField(default=False)
     winning_agent_index = fields.IntField(null=True)
-    total_staked = fields.DecimalField(max_digits=100, decimal_places=0)
-    current_window_index = fields.IntField(null=True)
+    total_rewards = fields.DecimalField(max_digits=100, decimal_places=0, default=0)
+    current_window_index = fields.IntField(null=True)  # Index of the current active window
     
-    # Game results
-    total_rewards = fields.DecimalField(max_digits=100, decimal_places=0, null=True)
-    burn_fee_amount = fields.DecimalField(max_digits=100, decimal_places=0, null=True)
-    platform_fee_amount = fields.DecimalField(max_digits=100, decimal_places=0, null=True)
-    total_fees_amount = fields.DecimalField(max_digits=100, decimal_places=0, null=True)
+    # Lists
+    stake_windows_list = fields.JSONField(default=list)  # Array of stake window indices
+    agents_list = fields.JSONField(default=list)  # Array of agent addresses
     
     # Timestamps
     created_at = fields.BigIntField()
@@ -97,6 +96,33 @@ class GameSession(Model):
     )
 
 
+class Agent(Model):
+    """
+    Represents an agent in a game session.
+    Each agent can receive stakes from users and potentially win the game.
+    
+    Key responsibilities:
+    - Tracks total stake amount
+    - Maintains agent initialization status
+    - Links to game session
+    """
+    address = fields.TextField()  # ContractAddress
+    agent_index = fields.IntField()
+    session_address = fields.TextField()
+    total_staked = fields.DecimalField(max_digits=100, decimal_places=0, default=0)
+    
+    created_at = fields.BigIntField()
+    updated_at = fields.BigIntField()
+    
+    # Relationships
+    session: fields.ForeignKeyField[GameSession] = fields.ForeignKeyField(
+        'models.GameSession', related_name='agents'
+    )
+    
+    class Meta:
+        unique_together = [('address', 'session_address')]
+
+
 class StakeWindow(Model):
     """
     Represents a staking window in a game session.
@@ -107,22 +133,25 @@ class StakeWindow(Model):
     - Tracks window-specific metrics
     - Manages window lifecycle
     """
-    id = fields.IntField(primary_key=True)
+    index = fields.IntField()
     session_address = fields.TextField()
-    window_index = fields.IntField()
     
     start_time = fields.BigIntField()
     end_time = fields.BigIntField()
-    is_active = fields.BooleanField()
+    is_active = fields.BooleanField(default=False)
     
     total_staked = fields.DecimalField(max_digits=100, decimal_places=0, default=0)
     
     created_at = fields.BigIntField()
+    updated_at = fields.BigIntField()
     
     # Relationships
     session: fields.ForeignKeyField[GameSession] = fields.ForeignKeyField(
         'models.GameSession', related_name='stake_windows'
     )
+    
+    class Meta:
+        unique_together = [('index', 'session_address')]
 
 
 class UserStake(Model):
@@ -135,13 +164,13 @@ class UserStake(Model):
     - Records claimed rewards
     - Manages agent selections
     """
-    id = fields.IntField(primary_key=True)
-    session_address = fields.TextField()  # ContractAddress
     user_address = fields.TextField()  # ContractAddress
     agent_index = fields.IntField()
+    stake_window_index = fields.IntField()
+    session_address = fields.TextField()  # ContractAddress
     
     # Current Position State
-    staked_amount = fields.DecimalField(max_digits=100, decimal_places=0)
+    amount = fields.DecimalField(max_digits=100, decimal_places=0)
     claimed_rewards = fields.DecimalField(max_digits=100, decimal_places=0, default=0)
     
     # Timestamps
@@ -152,6 +181,9 @@ class UserStake(Model):
     session: fields.ForeignKeyField[GameSession] = fields.ForeignKeyField(
         'models.GameSession', related_name='user_stakes'
     )
+    
+    class Meta:
+        unique_together = [('user_address', 'agent_index', 'stake_window_index', 'session_address')]
 
 
 class GameEventType(Enum):
@@ -159,6 +191,9 @@ class GameEventType(Enum):
     UNSTAKE = "UNSTAKE"
     EMERGENCY_WITHDRAW = "EMERGENCY_WITHDRAW"
     REWARDS_CLAIMED = "REWARDS_CLAIMED"
+    GAME_OVER = "GAME_OVER"
+    GAME_SUSPENDED = "GAME_SUSPENDED"
+    GAME_INITIALIZED = "GAME_INITIALIZED"
 
 
 class GameEvent(Model):
@@ -169,7 +204,7 @@ class GameEvent(Model):
     Key responsibilities:
     - Records stake/unstake events
     - Tracks reward claims
-    - Captures emergency withdrawals
+    - Captures emergency withdrawalscd 
     
     Used for:
     - User activity tracking
@@ -185,7 +220,7 @@ class GameEvent(Model):
     
     # Fields for STAKE and UNSTAKE
     agent_index = fields.IntField(null=True)
-    window_index = fields.IntField(null=True)
+    stake_window_index = fields.IntField(null=True)
     amount = fields.DecimalField(max_digits=100, decimal_places=0)
     
     # Relationships

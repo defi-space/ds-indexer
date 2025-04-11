@@ -1,37 +1,45 @@
+from defi_space_indexer import models as models
+from defi_space_indexer.types.game_factory.starknet_events.game_session_class_hash_updated import GameSessionClassHashUpdatedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.game_models import GameFactory
-from defi_space_indexer.types.game_factory.starknet_events.game_session_class_hash_updated import GameSessionClassHashUpdatedPayload
+
 
 async def on_game_session_class_hash_updated(
     ctx: HandlerContext,
     event: StarknetEvent[GameSessionClassHashUpdatedPayload],
 ) -> None:
-    """Handle GameSessionClassHashUpdated event from GameFactory contract.
+    # Extract data from event payload
+    old_hash = f'0x{event.payload.old_hash:x}'
+    new_hash = f'0x{event.payload.new_hash:x}'
+    factory_address = f'0x{event.payload.factory_address:x}'
+    block_timestamp = event.payload.block_timestamp
     
-    Updates the implementation hash for game sessions. Important for:
-    - Tracking protocol upgrades
-    - Monitoring implementation changes
-    - Maintaining configuration history
-    """
-    factory = await GameFactory.get_or_none(address=hex(event.payload.factory_address))
-    if factory is None:
-        ctx.logger.info(f"GameFactory not found: {hex(event.payload.factory_address)}")
+    # Get game factory from database
+    factory = await models.GameFactory.get_or_none(address=factory_address)
+    if not factory:
+        ctx.logger.warning(f"Game factory {factory_address} not found when updating game session class hash")
         return
     
-    # Record configuration change
-    old_hash = hex(event.payload.old_hash)
-    new_hash = hex(event.payload.new_hash)
+    # Update the game factory
+    factory.game_session_class_hash = new_hash
+    factory.updated_at = block_timestamp
     
+    # Update or initialize the config_history field
+    if not factory.config_history:
+        factory.config_history = []
+    
+    # Add the change to config history
     factory.config_history.append({
         'field': 'game_session_class_hash',
         'old_value': old_hash,
         'new_value': new_hash,
-        'timestamp': event.payload.block_timestamp
+        'timestamp': block_timestamp
     })
     
-    # Update current state
-    factory.game_session_class_hash = new_hash
-    factory.updated_at = event.payload.block_timestamp
+    # Save the changes
+    await factory.save()
     
-    await factory.save() 
+    ctx.logger.info(
+        f"Game session class hash updated: factory={factory_address}, "
+        f"old_hash={old_hash}, new_hash={new_hash}"
+    )

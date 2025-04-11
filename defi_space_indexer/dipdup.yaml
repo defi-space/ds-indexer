@@ -41,15 +41,15 @@ contracts:
     address: ${AMM_PAIR_ADDRESS} # Template
     typename: amm_pair
 
-  farming_factory:
+  farm_factory:
     kind: starknet
-    address: ${FARMING_FACTORY_ADDRESS}
+    address: ${FARM_FACTORY_ADDRESS}
     typename: farming_factory
 
-  farming_reactor:
+  farm:
     kind: starknet
-    address: ${FARMING_REACTOR_ADDRESS} # Template
-    typename: farming_reactor
+    address: ${FARM_ADDRESS} # Template
+    typename: farming_farm
 
   game_factory:
     kind: starknet
@@ -60,6 +60,11 @@ contracts:
     kind: starknet
     address: ${GAME_SESSION_ADDRESS} # Template
     typename: game_session
+
+  faucet:
+    kind: starknet
+    address: ${FAUCET_ADDRESS}
+    typename: faucet
 
 indexes:
   amm_factory_events:
@@ -84,26 +89,32 @@ indexes:
       - callback: on_factory_initialized
         contract: amm_factory
         name: FactoryInitialized
+      - callback: on_amm_factory_config_updated
+        contract: amm_factory
+        name: ConfigUpdated
 
-  farming_factory_events:
+  farm_factory_events:
     kind: starknet.events
-    first_level: ${FARMING_FACTORY_FIRST_LEVEL}
+    first_level: ${FARM_FACTORY_FIRST_LEVEL}
     datasources:
       # - subsquid
       - node
     handlers:
-      - callback: on_reactor_created
-        contract: farming_factory
-        name: ReactorCreated
-      - callback: on_powerplant_ownership_transferred
-        contract: farming_factory
+      - callback: on_farm_created
+        contract: farm_factory
+        name: FarmCreated
+      - callback: on_farm_factory_ownership_transferred
+        contract: farm_factory
         name: OwnershipTransferred
-      - callback: on_reactor_class_hash_updated
-        contract: farming_factory
-        name: ReactorClassHashUpdated
-      - callback: on_powerplant_initialized
-        contract: farming_factory
-        name: PowerplantInitialized
+      - callback: on_farm_class_hash_updated
+        contract: farm_factory
+        name: FarmClassHashUpdated
+      - callback: on_farm_factory_initialized
+        contract: farm_factory
+        name: FarmFactoryInitialized
+      - callback: on_farm_factory_config_updated
+        contract: farm_factory
+        name: ConfigUpdated
 
   game_factory_events:
     kind: starknet.events
@@ -124,12 +135,52 @@ indexes:
       - callback: on_game_session_class_hash_updated
         contract: game_factory
         name: GameSessionClassHashUpdated
+      - callback: on_game_factory_config_updated
+        contract: game_factory
+        name: ConfigUpdated
+
+  faucet_events:
+    kind: starknet.events
+    first_level: ${FAUCET_FIRST_LEVEL}
+    datasources:
+      - node
+    handlers:
+      - callback: on_faucet_initialized
+        contract: faucet
+        name: FaucetInitialized
+      - callback: on_token_claimed
+        contract: faucet
+        name: Claim
+      - callback: on_user_whitelisted
+        contract: faucet
+        name: AddedToWhitelist
+      - callback: on_token_added
+        contract: faucet
+        name: TokenAdded
+      - callback: on_token_removed
+        contract: faucet
+        name: TokenRemoved
+      - callback: on_user_removed_from_whitelist
+        contract: faucet
+        name: RemovedFromWhitelist
+      - callback: on_claim_interval_updated
+        contract: faucet
+        name: ClaimIntervalUpdated
+      - callback: on_faucet_ownership_transferred
+        contract: faucet
+        name: OwnershipTransferred
+      - callback: on_last_claim_updated
+        contract: faucet
+        name: LastClaimUpdated
+      - callback: on_config_updated
+        contract: faucet
+        name: ConfigUpdated
 
   # ---- For code generation only ----
-  # reactor_events_init:
-  #   template: reactor_events
+  # farm_events_init:
+  #   template: farm_events
   #   values:
-  #     contract: farming_reactor
+  #     contract: farm
   # pair_events_init:
   #   template: pair_events
   #   values:
@@ -162,10 +213,22 @@ templates:
       - callback: on_skim
         contract: <contract>
         name: Skim
+      - callback: on_pair_config_updated
+        contract: <contract>
+        name: ConfigUpdated
+      - callback: on_reserve_updated
+        contract: <contract>
+        name: ReserveUpdated
+      - callback: on_klast_updated
+        contract: <contract>
+        name: KLastUpdated
+      - callback: on_price_accumulator_updated
+        contract: <contract>
+        name: PriceAccumulatorUpdated
 
-  reactor_events:
+  farm_events:
     kind: starknet.events
-    first_level: ${FARMING_FACTORY_FIRST_LEVEL}
+    first_level: ${FARM_FACTORY_FIRST_LEVEL}
     datasources:
       # - subsquid
       - node
@@ -197,9 +260,24 @@ templates:
       - callback: on_rewarder_removed
         contract: <contract>
         name: RewarderRemoved
-      - callback: on_reactor_ownership_transferred
+      - callback: on_farm_ownership_transferred
         contract: <contract>
         name: OwnershipTransferred
+      - callback: on_farm_config_updated
+        contract: <contract>
+        name: ConfigUpdated
+      - callback: on_reward_per_token_updated
+        contract: <contract>
+        name: RewardPerTokenUpdated
+      - callback: on_reward_state_updated
+        contract: <contract>
+        name: RewardStateUpdated
+      - callback: on_penalty_end_time_updated
+        contract: <contract>
+        name: PenaltyEndTimeUpdated
+      - callback: on_unallocated_rewards_updated
+        contract: <contract>
+        name: UnallocatedRewardsUpdated
 
   game_session_events:
     kind: starknet.events
@@ -235,6 +313,15 @@ templates:
       - callback: on_game_initialized
         contract: <contract>
         name: GameInitialized
+      - callback: on_game_config_updated
+        contract: <contract>
+        name: ConfigUpdated
+      - callback: on_agent_updated
+        contract: <contract>
+        name: AgentUpdated
+      - callback: on_agent_created
+        contract: <contract>
+        name: AgentCreated
 
 hooks:
   calculate_game_metrics:

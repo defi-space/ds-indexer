@@ -1,0 +1,554 @@
+[
+  {
+    "type": "impl",
+    "name": "WhitelistedFaucetImpl",
+    "interface_name": "ds::faucet::whitelisted::src::WhitelistedFaucet::IWhitelistedFaucet"
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "type": "core::integer::u128",
+        "name": "low"
+      },
+      {
+        "type": "core::integer::u128",
+        "name": "high"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "type": "()",
+        "name": "False"
+      },
+      {
+        "type": "()",
+        "name": "True"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::IWhitelistedFaucet",
+    "items": [
+      {
+        "name": "claim",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "add_token",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "token"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "amount"
+          },
+          {
+            "type": "core::integer::u256",
+            "name": "claim_amount"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "remove_token",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "token_address"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "remove_all_tokens",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "get_token_amount",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "token"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_claim_amount",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "token"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_last_claim",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "user_address"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u64"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_claim_interval",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u64"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_owner",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "add_to_whitelist",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "address"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "remove_from_whitelist",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "address"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "is_whitelisted",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "address"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "set_claim_interval",
+        "inputs": [
+          {
+            "type": "core::integer::u64",
+            "name": "new_interval"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "transfer_ownership",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "new_owner"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
+        "name": "get_game_session_id",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u64"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "type": "core::integer::u64",
+        "name": "game_session_id"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::TokenAdded",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "token",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "claim_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::TokenRemoved",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "token",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::Claim",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "sender",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "token",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "faucet_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "total_token_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "claimed_at",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::AddedToWhitelist",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::RemovedFromWhitelist",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::FaucetInitialized",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "faucet_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "claim_interval",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "game_session_id",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::ClaimIntervalUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::integer::u64",
+        "name": "old_interval",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "new_interval",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::OwnershipTransferred",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "previous_owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "new_owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::LastClaimUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "previous_timestamp",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "new_timestamp",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::ConfigUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::felt252",
+        "name": "field_name",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "old_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "new_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "faucet_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "type": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::TokenAdded",
+        "name": "TokenAdded",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::TokenRemoved",
+        "name": "TokenRemoved",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::Claim",
+        "name": "Claim",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::AddedToWhitelist",
+        "name": "AddedToWhitelist",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::RemovedFromWhitelist",
+        "name": "RemovedFromWhitelist",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::FaucetInitialized",
+        "name": "FaucetInitialized",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::ClaimIntervalUpdated",
+        "name": "ClaimIntervalUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::OwnershipTransferred",
+        "name": "OwnershipTransferred",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::LastClaimUpdated",
+        "name": "LastClaimUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::faucet::whitelisted::src::WhitelistedFaucet::WhitelistedFaucet::ConfigUpdated",
+        "name": "ConfigUpdated",
+        "kind": "nested"
+      }
+    ]
+  }
+]

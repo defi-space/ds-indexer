@@ -5,17 +5,18 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict
 
 
-class ReactorCreatedPayload(BaseModel):
+class FarmCreatedPayload(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    reactor: int
+    farm: int
     lp_token: int
-    powerplant: int
+    farm_factory: int
     penalty_duration: int
     withdraw_penalty: int
     multiplier: int
     penalty_receiver: int
-    reactor_index: int
-    reactor_count: int
+    farm_index: int
+    farm_count: int
+    game_session_id: int
     block_timestamp: int

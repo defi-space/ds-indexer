@@ -16,5 +16,6 @@ class RewardAddedPayload(BaseModel):
     period_finish: int
     reward_per_token_stored: int
     unallocated_rewards: int
+    token_decimals: int
     block_timestamp: int
     rewarder: int

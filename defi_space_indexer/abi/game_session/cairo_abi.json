@@ -749,6 +749,102 @@
   },
   {
     "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::ConfigUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::felt252",
+        "name": "field_name",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "old_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "new_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "session_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::AgentUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::integer::u32",
+        "name": "agent_index",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "agent_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "old_total_staked",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "new_total_staked",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "session_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::AgentCreated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::integer::u32",
+        "name": "agent_index",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "agent_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "session_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
     "name": "ds::game::src::GameSession::GameSession::Event",
     "kind": "enum",
     "variants": [
@@ -795,6 +891,21 @@
       {
         "type": "ds::game::src::GameSession::GameSession::GameInitialized",
         "name": "GameInitialized",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::ConfigUpdated",
+        "name": "ConfigUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::AgentUpdated",
+        "name": "AgentUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::AgentCreated",
+        "name": "AgentCreated",
         "kind": "nested"
       }
     ]

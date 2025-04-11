@@ -1,86 +1,130 @@
+from defi_space_indexer import models as models
+from defi_space_indexer.types.game_session.starknet_events.user_unstaked import UserUnstakedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.game_models import GameSession, UserStake, GameEvent, GameEventType, StakeWindow
-from defi_space_indexer.types.game_session.starknet_events.user_unstaked import UserUnstakedPayload
+
 
 async def on_user_unstaked(
     ctx: HandlerContext,
     event: StarknetEvent[UserUnstakedPayload],
 ) -> None:
-    """Handle UserUnstaked event from GameSession contract.
-    
-    Tracks a user unstaking tokens from an agent. Important for:
-    - Recording withdrawal of stake
-    - Updating agent allocations
-    - Tracking game participation changes
-    """
-    session = await GameSession.get_or_none(address=event.data.from_address)
-    if session is None:
-        ctx.logger.error(f"GameSession not found: {event.data.from_address}")
-        return
-        
-    user_address = hex(event.payload.user)
+    # Extract data from event payload
+    user_address = f'0x{event.payload.user:x}'
     agent_index = event.payload.agent_index
     amount = event.payload.amount
     window_index = event.payload.window_index
-        
-    try:
-        # Get user stake
-        user_stake = await UserStake.get_or_none(
-            session_address=event.data.from_address,
-            user_address=user_address,
-            agent_index=agent_index
+    block_timestamp = event.payload.block_timestamp
+    
+    # Get session address from event data
+    session_address = event.data.from_address
+    transaction_hash = event.data.transaction_hash
+    
+    # Get session from database
+    session = await models.GameSession.get_or_none(address=session_address)
+    if not session:
+        ctx.logger.warning(f"Session {session_address} not found when processing user unstake")
+        return
+    
+    # Get agent from database
+    agent = None
+    for agent_address in session.agents_list:
+        agent_obj = await models.Agent.get_or_none(
+            address=agent_address,
+            session_address=session_address
         )
-        
-        if user_stake is None:
-            ctx.logger.error(f"UserStake not found for unstaking: {user_address} in {event.data.from_address}")
-            return
-        
-        # Update user stake
-        user_stake.staked_amount -= amount
-        user_stake.updated_at = event.payload.block_timestamp
-        
-        if user_stake.staked_amount <= 0:
-            await user_stake.delete()
+        if agent_obj and agent_obj.agent_index == agent_index:
+            agent = agent_obj
+            break
+    
+    if not agent:
+        ctx.logger.warning(
+            f"Agent with index={agent_index}, session={session_address} not found when processing unstake"
+        )
+        return
+    
+    # Update agent's total staked
+    if agent.total_staked >= amount:
+        agent.total_staked -= amount
+        agent.updated_at = block_timestamp
+        await agent.save()
+    else:
+        ctx.logger.warning(
+            f"Agent {agent_index} has less staked amount ({agent.total_staked}) than unstake amount ({amount})"
+        )
+        agent.total_staked = 0
+        agent.updated_at = block_timestamp
+        await agent.save()
+    
+    # Get the user stake record
+    user_stake = await models.UserStake.get_or_none(
+        user_address=user_address,
+        agent_index=agent_index,
+        stake_window_index=window_index,
+        session_address=session_address
+    )
+    
+    # Get stake window
+    stake_window = await models.StakeWindow.get_or_none(
+        session_address=session_address,
+        index=window_index
+    )
+    
+    # Update stake window's total staked if it exists
+    if stake_window:
+        if stake_window.total_staked >= amount:
+            stake_window.total_staked -= amount
         else:
+            ctx.logger.warning(
+                f"Stake window {window_index} has less total staked ({stake_window.total_staked}) "
+                f"than unstake amount ({amount}). Setting to 0."
+            )
+            stake_window.total_staked = 0
+        
+        # Add warning if unstaking in an inactive window
+        if not stake_window.is_active:
+            ctx.logger.warning(
+                f"User {user_address} unstaked in inactive window {window_index} "
+                f"for session {session_address}. This may be a frontend timing issue."
+            )
+        
+        stake_window.updated_at = block_timestamp
+        await stake_window.save()
+    else:
+        ctx.logger.warning(f"Stake window {window_index} not found for session {session_address}")
+    
+    if user_stake:
+        # If the unstake amount is equal to or greater than the staked amount, remove the stake
+        if amount >= user_stake.amount:
+            await user_stake.delete()
+            ctx.logger.info(f"Deleted user stake record for user={user_address}, agent={agent_index}, window={window_index}")
+        else:
+            # Otherwise, reduce the staked amount
+            user_stake.amount -= amount
+            user_stake.updated_at = block_timestamp
             await user_stake.save()
-        
-        # Record unstake event
-        unstake_event = GameEvent(
-            transaction_hash=event.data.transaction_hash,
-            created_at=event.payload.block_timestamp,
-            event_type=GameEventType.UNSTAKE,
-            user_address=user_address,
-            agent_index=agent_index,
-            window_index=window_index,
-            amount=amount,
-            session=session,
-            user_stake=user_stake if user_stake.staked_amount > 0 else None,
+            ctx.logger.info(
+                f"Updated user stake record: user={user_address}, agent={agent_index}, "
+                f"window={window_index}, new_amount={user_stake.amount}"
+            )
+    else:
+        ctx.logger.warning(
+            f"UserStake record not found for user={user_address}, agent={agent_index}, "
+            f"window={window_index}, session={session_address} when processing unstake"
         )
-        await unstake_event.save()
-        
-        # Update session total staked
-        session.total_staked -= amount
-        session.updated_at = event.payload.block_timestamp
-        await session.save()
-        
-        # Update window total staked
-        window = await StakeWindow.get_or_none(
-            session_address=event.data.from_address,
-            window_index=window_index
-        )
-        
-        if window:
-            window.total_staked -= amount
-            await window.save()
-        
-        # Trigger time-based fields update
-        await ctx.fire_hook(
-            'active_staking_window',
-            update_all=False,
-            session_address=event.data.from_address
-        )
-        
-    except Exception as e:
-        ctx.logger.error(f"Error processing UserUnstaked event: {str(e)}")
-        raise 
+    
+    # Create game event record for unstake
+    await models.GameEvent.create(
+        transaction_hash=transaction_hash,
+        created_at=block_timestamp,
+        event_type=models.GameEventType.UNSTAKE,
+        user_address=user_address,
+        agent_index=agent_index,
+        stake_window_index=window_index,
+        amount=amount,
+        session=session,
+    )
+    
+    ctx.logger.info(
+        f"User unstaked: user={user_address}, agent={agent_index}, session={session_address}, "
+        f"window={window_index}, amount={amount}"
+    )

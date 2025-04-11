@@ -1,62 +1,71 @@
+from defi_space_indexer import models as models
+from defi_space_indexer.types.farming_farm.starknet_events.deposit import DepositPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.farming_models import Reactor, AgentStake, AgentStakeEvent
-from defi_space_indexer.types.farming_reactor.starknet_events.deposit import DepositPayload
-from decimal import Decimal
+
 
 async def on_deposit(
     ctx: HandlerContext,
     event: StarknetEvent[DepositPayload],
 ) -> None:
-    """Handle Deposit event from Reactor contract.
+    # Extract data from event payload
+    user_address = f'0x{event.payload.user_address:x}'
+    staked_amount = event.payload.staked_amount
+    total_staked = event.payload.total_staked
+    user_staked = event.payload.user_staked
+    multiplier = event.payload.multiplier
+    penalty_end_time = event.payload.penalty_end_time
+    block_timestamp = event.payload.block_timestamp
     
-    Tracks user deposits into staking pools. Updates:
-    - Reactor's total staked amount
-    - User's staking position
-    - Penalty timelock if applicable
+    # Get farm address from event data
+    farm_address = event.data.from_address
+    transaction_hash = event.data.transaction_hash
     
-    Critical for:
-    - TVL calculations
-    - User reward calculations
-    - Position tracking
-    """
-    reactor = await Reactor.get_or_none(address=event.data.from_address)
-    if reactor is None:
-        ctx.logger.info(f"Reactor not found: {event.data.from_address}")
+    # Get farm from database
+    farm = await models.Farm.get_or_none(address=farm_address)
+    if not farm:
+        ctx.logger.warning(f"Farm {farm_address} not found when processing deposit event")
         return
-    reactor.total_staked = Decimal(event.payload.total_staked)
-    reactor.updated_at = event.payload.block_timestamp
-    await reactor.save()
     
-    stake = await AgentStake.get_or_none(
-        reactor_address=event.data.from_address,
-        agent_address=hex(event.payload.user_address),
-    )
-    if stake is None:
-        stake = AgentStake(
-            reactor_address=event.data.from_address,
-            agent_address=hex(event.payload.user_address),
-            staked_amount=Decimal(event.payload.staked_amount),
-            reward_per_token_paid={},
-            rewards={},
-            penalty_end_time=event.payload.penalty_end_time,
-            created_at=event.payload.block_timestamp,
-            updated_at=event.payload.block_timestamp,
-            reactor=reactor,
-        )
-    else:
-        stake.staked_amount += Decimal(event.payload.staked_amount)
-        stake.penalty_end_time = event.payload.penalty_end_time
-        stake.updated_at = event.payload.block_timestamp
-    await stake.save()
+    # Update farm total staked and multiplier
+    farm.total_staked = total_staked
+    farm.multiplier = multiplier
+    farm.updated_at = block_timestamp
+    await farm.save()
     
-    stake_event = AgentStakeEvent(
-        transaction_hash=event.data.transaction_hash,
-        event_type='DEPOSIT',
-        agent_address=hex(event.payload.user_address),
-        staked_amount=Decimal(event.payload.staked_amount),
-        created_at=event.payload.block_timestamp,
-        reactor=reactor,
-        stake=stake,
+    # Get or create agent stake
+    agent_stake, created = await models.AgentStake.get_or_create(
+        farm_address=farm_address,
+        agent_address=user_address,
+        defaults={
+            'staked_amount': 0,
+            'penalty_end_time': 0,
+            'reward_per_token_paid': {},
+            'rewards': {},
+            'created_at': block_timestamp,
+            'updated_at': block_timestamp,
+            'farm': farm,
+        }
     )
-    await stake_event.save()
+    
+    # Update agent stake
+    agent_stake.staked_amount = user_staked
+    agent_stake.penalty_end_time = penalty_end_time
+    agent_stake.updated_at = block_timestamp
+    await agent_stake.save()
+    
+    # Create agent stake event
+    await models.AgentStakeEvent.create(
+        transaction_hash=transaction_hash,
+        created_at=block_timestamp,
+        event_type=models.StakeEventType.DEPOSIT,
+        agent_address=user_address,
+        staked_amount=staked_amount,
+        farm=farm,
+        stake=agent_stake
+    )
+    
+    ctx.logger.info(
+        f"Deposit event processed: agent={user_address}, farm={farm_address}, "
+        f"amount={staked_amount}, total_staked={total_staked}, user_staked={user_staked}"
+    )

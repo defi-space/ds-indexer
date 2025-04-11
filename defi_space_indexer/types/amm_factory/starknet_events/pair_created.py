@@ -15,4 +15,5 @@ class PairCreatedPayload(BaseModel):
     total_pairs: int
     pair_contract_class_hash: int
     factory_address: int
+    game_session_id: int
     block_timestamp: int

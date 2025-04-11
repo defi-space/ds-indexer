@@ -30,11 +30,11 @@ async def calculate_game_metrics(
             continue
             
         # Skip calculations for completed games
-        if session.is_over:
+        if session.game_over:
             continue
         
         # Fetch price data from DexScreener for stake token
-        stake_token_pairs = await get_token_pairs("starknet", session.stake_token_address)
+        stake_token_pairs = await get_token_pairs("starknet", session.user_stake_token_address)
         
         # Get USD price
         stake_token_price = Decimal(0)

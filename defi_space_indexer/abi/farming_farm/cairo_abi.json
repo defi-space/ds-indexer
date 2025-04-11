@@ -1,8 +1,8 @@
 [
   {
     "type": "impl",
-    "name": "ReactorImpl",
-    "interface_name": "ds::yield_farming::src::Reactor::IReactor"
+    "name": "FarmImpl",
+    "interface_name": "ds::farms::src::Farm::IFarm"
   },
   {
     "type": "struct",
@@ -20,7 +20,7 @@
   },
   {
     "type": "struct",
-    "name": "ds::yield_farming::src::Reactor::Reward",
+    "name": "ds::farms::src::Farm::Reward",
     "members": [
       {
         "type": "core::integer::u256",
@@ -64,7 +64,7 @@
   },
   {
     "type": "interface",
-    "name": "ds::yield_farming::src::Reactor::IReactor",
+    "name": "ds::farms::src::Farm::IFarm",
     "items": [
       {
         "name": "owner",
@@ -284,7 +284,7 @@
         ],
         "outputs": [
           {
-            "type": "ds::yield_farming::src::Reactor::Reward"
+            "type": "ds::farms::src::Farm::Reward"
           }
         ],
         "state_mutability": "view",
@@ -530,7 +530,7 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::Deposit",
+    "name": "ds::farms::src::Farm::Farm::Deposit",
     "kind": "struct",
     "members": [
       {
@@ -572,7 +572,7 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::Withdraw",
+    "name": "ds::farms::src::Farm::Farm::Withdraw",
     "kind": "struct",
     "members": [
       {
@@ -614,7 +614,7 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::Harvest",
+    "name": "ds::farms::src::Farm::Farm::Harvest",
     "kind": "struct",
     "members": [
       {
@@ -656,7 +656,7 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::RewardAdded",
+    "name": "ds::farms::src::Farm::Farm::RewardAdded",
     "kind": "struct",
     "members": [
       {
@@ -695,6 +695,11 @@
         "kind": "data"
       },
       {
+        "type": "core::integer::u8",
+        "name": "token_decimals",
+        "kind": "data"
+      },
+      {
         "type": "core::integer::u64",
         "name": "block_timestamp",
         "kind": "data"
@@ -708,7 +713,7 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::ERC20Recovered",
+    "name": "ds::farms::src::Farm::Farm::ERC20Recovered",
     "kind": "struct",
     "members": [
       {
@@ -735,7 +740,7 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::UnallocatedRewardsClaimed",
+    "name": "ds::farms::src::Farm::Farm::UnallocatedRewardsClaimed",
     "kind": "struct",
     "members": [
       {
@@ -767,7 +772,7 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::PenaltyReceiverUpdated",
+    "name": "ds::farms::src::Farm::Farm::PenaltyReceiverUpdated",
     "kind": "struct",
     "members": [
       {
@@ -789,7 +794,7 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::RewarderAdded",
+    "name": "ds::farms::src::Farm::Farm::RewarderAdded",
     "kind": "struct",
     "members": [
       {
@@ -806,7 +811,7 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::RewarderRemoved",
+    "name": "ds::farms::src::Farm::Farm::RewarderRemoved",
     "kind": "struct",
     "members": [
       {
@@ -823,7 +828,7 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::OwnershipTransferred",
+    "name": "ds::farms::src::Farm::Farm::OwnershipTransferred",
     "kind": "struct",
     "members": [
       {
@@ -845,57 +850,222 @@
   },
   {
     "type": "event",
-    "name": "ds::yield_farming::src::Reactor::Reactor::Event",
+    "name": "ds::farms::src::Farm::Farm::ConfigUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::felt252",
+        "name": "field_name",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "old_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "new_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::farms::src::Farm::Farm::RewardPerTokenUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "reward_token",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "previous_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "new_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::farms::src::Farm::Farm::RewardStateUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user_address",
+        "kind": "key"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "reward_token",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "reward_per_token_paid",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "rewards",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::farms::src::Farm::Farm::PenaltyEndTimeUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "user_address",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "old_end_time",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "new_end_time",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::farms::src::Farm::Farm::UnallocatedRewardsUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "reward_token",
+        "kind": "key"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "previous_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
+        "name": "new_amount",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::farms::src::Farm::Farm::Event",
     "kind": "enum",
     "variants": [
       {
-        "type": "ds::yield_farming::src::Reactor::Reactor::Deposit",
+        "type": "ds::farms::src::Farm::Farm::Deposit",
         "name": "Deposit",
         "kind": "nested"
       },
       {
-        "type": "ds::yield_farming::src::Reactor::Reactor::Withdraw",
+        "type": "ds::farms::src::Farm::Farm::Withdraw",
         "name": "Withdraw",
         "kind": "nested"
       },
       {
-        "type": "ds::yield_farming::src::Reactor::Reactor::Harvest",
+        "type": "ds::farms::src::Farm::Farm::Harvest",
         "name": "Harvest",
         "kind": "nested"
       },
       {
-        "type": "ds::yield_farming::src::Reactor::Reactor::RewardAdded",
+        "type": "ds::farms::src::Farm::Farm::RewardAdded",
         "name": "RewardAdded",
         "kind": "nested"
       },
       {
-        "type": "ds::yield_farming::src::Reactor::Reactor::ERC20Recovered",
+        "type": "ds::farms::src::Farm::Farm::ERC20Recovered",
         "name": "ERC20Recovered",
         "kind": "nested"
       },
       {
-        "type": "ds::yield_farming::src::Reactor::Reactor::UnallocatedRewardsClaimed",
+        "type": "ds::farms::src::Farm::Farm::UnallocatedRewardsClaimed",
         "name": "UnallocatedRewardsClaimed",
         "kind": "nested"
       },
       {
-        "type": "ds::yield_farming::src::Reactor::Reactor::PenaltyReceiverUpdated",
+        "type": "ds::farms::src::Farm::Farm::PenaltyReceiverUpdated",
         "name": "PenaltyReceiverUpdated",
         "kind": "nested"
       },
       {
-        "type": "ds::yield_farming::src::Reactor::Reactor::RewarderAdded",
+        "type": "ds::farms::src::Farm::Farm::RewarderAdded",
         "name": "RewarderAdded",
         "kind": "nested"
       },
       {
-        "type": "ds::yield_farming::src::Reactor::Reactor::RewarderRemoved",
+        "type": "ds::farms::src::Farm::Farm::RewarderRemoved",
         "name": "RewarderRemoved",
         "kind": "nested"
       },
       {
-        "type": "ds::yield_farming::src::Reactor::Reactor::OwnershipTransferred",
+        "type": "ds::farms::src::Farm::Farm::OwnershipTransferred",
         "name": "OwnershipTransferred",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::farms::src::Farm::Farm::ConfigUpdated",
+        "name": "ConfigUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::farms::src::Farm::Farm::RewardPerTokenUpdated",
+        "name": "RewardPerTokenUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::farms::src::Farm::Farm::RewardStateUpdated",
+        "name": "RewardStateUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::farms::src::Farm::Farm::PenaltyEndTimeUpdated",
+        "name": "PenaltyEndTimeUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::farms::src::Farm::Farm::UnallocatedRewardsUpdated",
+        "name": "UnallocatedRewardsUpdated",
         "kind": "nested"
       }
     ]

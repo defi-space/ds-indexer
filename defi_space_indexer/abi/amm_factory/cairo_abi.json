@@ -1,12 +1,12 @@
 [
   {
     "type": "impl",
-    "name": "Factory",
-    "interface_name": "ds::amm::src::Factory::IFactory"
+    "name": "AMMFactory",
+    "interface_name": "ds::amm::src::AMMFactory::IAMMFactory"
   },
   {
     "type": "interface",
-    "name": "ds::amm::src::Factory::IFactory",
+    "name": "ds::amm::src::AMMFactory::IAMMFactory",
     "items": [
       {
         "name": "get_pair",
@@ -137,12 +137,16 @@
       {
         "type": "core::starknet::class_hash::ClassHash",
         "name": "pair_contract_class_hash"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "game_session_id"
       }
     ]
   },
   {
     "type": "event",
-    "name": "ds::amm::src::Factory::Factory::FactoryInitialized",
+    "name": "ds::amm::src::AMMFactory::AMMFactory::FactoryInitialized",
     "kind": "struct",
     "members": [
       {
@@ -161,6 +165,11 @@
         "kind": "data"
       },
       {
+        "type": "core::integer::u64",
+        "name": "game_session_id",
+        "kind": "data"
+      },
+      {
         "type": "core::starknet::class_hash::ClassHash",
         "name": "pair_contract_class_hash",
         "kind": "data"
@@ -174,7 +183,7 @@
   },
   {
     "type": "event",
-    "name": "ds::amm::src::Factory::Factory::PairCreated",
+    "name": "ds::amm::src::AMMFactory::AMMFactory::PairCreated",
     "kind": "struct",
     "members": [
       {
@@ -209,6 +218,11 @@
       },
       {
         "type": "core::integer::u64",
+        "name": "game_session_id",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
         "name": "block_timestamp",
         "kind": "data"
       }
@@ -216,7 +230,7 @@
   },
   {
     "type": "event",
-    "name": "ds::amm::src::Factory::Factory::FeesReceiverUpdated",
+    "name": "ds::amm::src::AMMFactory::AMMFactory::FeesReceiverUpdated",
     "kind": "struct",
     "members": [
       {
@@ -243,7 +257,7 @@
   },
   {
     "type": "event",
-    "name": "ds::amm::src::Factory::Factory::OwnerUpdated",
+    "name": "ds::amm::src::AMMFactory::AMMFactory::OwnerUpdated",
     "kind": "struct",
     "members": [
       {
@@ -270,7 +284,7 @@
   },
   {
     "type": "event",
-    "name": "ds::amm::src::Factory::Factory::PairContractClassHashUpdated",
+    "name": "ds::amm::src::AMMFactory::AMMFactory::PairContractClassHashUpdated",
     "kind": "struct",
     "members": [
       {
@@ -297,32 +311,69 @@
   },
   {
     "type": "event",
-    "name": "ds::amm::src::Factory::Factory::Event",
+    "name": "ds::amm::src::AMMFactory::AMMFactory::ConfigUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::felt252",
+        "name": "field_name",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "old_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "new_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ds::amm::src::AMMFactory::AMMFactory::Event",
     "kind": "enum",
     "variants": [
       {
-        "type": "ds::amm::src::Factory::Factory::FactoryInitialized",
+        "type": "ds::amm::src::AMMFactory::AMMFactory::FactoryInitialized",
         "name": "FactoryInitialized",
         "kind": "nested"
       },
       {
-        "type": "ds::amm::src::Factory::Factory::PairCreated",
+        "type": "ds::amm::src::AMMFactory::AMMFactory::PairCreated",
         "name": "PairCreated",
         "kind": "nested"
       },
       {
-        "type": "ds::amm::src::Factory::Factory::FeesReceiverUpdated",
+        "type": "ds::amm::src::AMMFactory::AMMFactory::FeesReceiverUpdated",
         "name": "FeesReceiverUpdated",
         "kind": "nested"
       },
       {
-        "type": "ds::amm::src::Factory::Factory::OwnerUpdated",
+        "type": "ds::amm::src::AMMFactory::AMMFactory::OwnerUpdated",
         "name": "OwnerUpdated",
         "kind": "nested"
       },
       {
-        "type": "ds::amm::src::Factory::Factory::PairContractClassHashUpdated",
+        "type": "ds::amm::src::AMMFactory::AMMFactory::PairContractClassHashUpdated",
         "name": "PairContractClassHashUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::amm::src::AMMFactory::AMMFactory::ConfigUpdated",
+        "name": "ConfigUpdated",
         "kind": "nested"
       }
     ]

@@ -6,7 +6,7 @@
   },
   {
     "type": "struct",
-    "name": "ds::game::src::GameSession::StakeWindow",
+    "name": "ds_game::GameSession::StakeWindow",
     "members": [
       {
         "type": "core::integer::u64",
@@ -72,7 +72,7 @@
             "name": "user_stake_token_address"
           },
           {
-            "type": "core::array::Array::<ds::game::src::GameSession::StakeWindow>",
+            "type": "core::array::Array::<ds_game::GameSession::StakeWindow>",
             "name": "user_stake_windows"
           },
           {
@@ -400,6 +400,38 @@
   },
   {
     "type": "event",
+    "name": "ds::game::src::GameFactory::GameFactory::ConfigUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::felt252",
+        "name": "field_name",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "old_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::felt252",
+        "name": "new_value",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "factory_address",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
     "name": "ds::game::src::GameFactory::GameFactory::Event",
     "kind": "enum",
     "variants": [
@@ -421,6 +453,11 @@
       {
         "type": "ds::game::src::GameFactory::GameFactory::GameSessionClassHashUpdated",
         "name": "GameSessionClassHashUpdated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameFactory::GameFactory::ConfigUpdated",
+        "name": "ConfigUpdated",
         "kind": "nested"
       }
     ]

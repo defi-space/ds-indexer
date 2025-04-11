@@ -1,29 +1,42 @@
+from defi_space_indexer import models as models
+from defi_space_indexer.types.amm_pair.starknet_events.sync import SyncPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.amm_models import Pair
-from defi_space_indexer.types.amm_pair.starknet_events.sync import SyncPayload
-from decimal import Decimal
+
 
 async def on_sync(
     ctx: HandlerContext,
     event: StarknetEvent[SyncPayload],
 ) -> None:
-    """Handle Sync event from Pair contract."""
-    # Get the pair from database first
-    pair = await Pair.get_or_none(address=event.data.from_address)
+    # Extract data from event payload
+    balance0 = event.payload.balance0
+    balance1 = event.payload.balance1
+    reserve0 = event.payload.reserve0
+    reserve1 = event.payload.reserve1
+    price_0_cumulative_last = event.payload.price_0_cumulative_last
+    price_1_cumulative_last = event.payload.price_1_cumulative_last
+    factory_address = f'0x{event.payload.factory_address:x}'
+    block_timestamp = event.payload.block_timestamp
     
-    # If pair doesn't exist yet, skip processing
+    # Get pair address from event data
+    pair_address = event.data.from_address
+    
+    # Get pair from database
+    pair = await models.Pair.get_or_none(address=pair_address)
     if not pair:
-        ctx.logger.info(f"Pair {event.data.from_address} not found, skipping sync event")
+        ctx.logger.warning(f"Pair {pair_address} not found when processing sync event")
         return
-
-    # Update pair
-    pair.reserve0 = Decimal(event.payload.reserve0)
-    pair.reserve1 = Decimal(event.payload.reserve1)
-    pair.price_0_cumulative_last = event.payload.price_0_cumulative_last
-    pair.price_1_cumulative_last = event.payload.price_1_cumulative_last
-    pair.block_timestamp_last = event.payload.block_timestamp
-    pair.klast = Decimal(event.payload.reserve0) * Decimal(event.payload.reserve1)
-    pair.updated_at = event.payload.block_timestamp
-
+    
+    # Update pair data
+    pair.reserve0 = reserve0
+    pair.reserve1 = reserve1
+    pair.price_0_cumulative_last = price_0_cumulative_last
+    pair.price_1_cumulative_last = price_1_cumulative_last
+    pair.block_timestamp_last = block_timestamp
+    pair.updated_at = block_timestamp
     await pair.save()
+    
+    ctx.logger.info(
+        f"Sync event processed: pair={pair_address}, "
+        f"reserve0={reserve0}, reserve1={reserve1}"
+    )

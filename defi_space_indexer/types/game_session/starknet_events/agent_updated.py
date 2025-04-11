@@ -5,11 +5,13 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict
 
 
-class PowerplantInitializedPayload(BaseModel):
+class AgentUpdatedPayload(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    powerplant: int
-    owner: int
-    reactor_class_hash: int
+    agent_index: int
+    agent_address: int
+    old_total_staked: int
+    new_total_staked: int
+    session_address: int
     block_timestamp: int

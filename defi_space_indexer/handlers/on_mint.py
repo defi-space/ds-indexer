@@ -1,75 +1,82 @@
+from defi_space_indexer import models as models
+from defi_space_indexer.types.amm_pair.starknet_events.mint import MintPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-from defi_space_indexer.models.amm_models import Pair, LiquidityEvent, LiquidityPosition
-from defi_space_indexer.types.amm_pair.starknet_events.mint import MintPayload
-from decimal import Decimal
+
 
 async def on_mint(
     ctx: HandlerContext,
     event: StarknetEvent[MintPayload],
 ) -> None:
-    """Handle Mint event from Pair contract.
+    # Extract data from event payload
+    sender_address = f'0x{event.payload.sender:x}'
+    amount0 = event.payload.amount0
+    amount1 = event.payload.amount1
+    reserve0 = event.payload.reserve0
+    reserve1 = event.payload.reserve1
+    user_liquidity = event.payload.user_liquidity
+    total_supply = event.payload.total_supply
+    factory_address = f'0x{event.payload.factory_address:x}'
+    block_timestamp = event.payload.block_timestamp
     
-    Triggered when liquidity is added to a pair. Updates:
-    - Pair total supply
-    - User's liquidity position
-    - Creates a record of the mint event
+    # Get pair address from event data
+    pair_address = event.data.from_address
+    transaction_hash = event.data.transaction_hash
     
-    The event contains:
-    - sender: Address adding liquidity
-    - amount0/amount1: Token amounts added
-    - liquidity: LP tokens minted
-    """
-    # Update pair
-    pair = await Pair.get_or_none(address=event.data.from_address)
-    if pair is None:
-        ctx.logger.info(f"Pair not found: {event.data.from_address}")
+    # Get pair from database
+    pair = await models.Pair.get_or_none(address=pair_address)
+    if not pair:
+        ctx.logger.warning(f"Pair {pair_address} not found when processing mint event")
         return
-
-    pair.total_supply = Decimal(event.payload.total_supply)
-    pair.updated_at = event.payload.block_timestamp
-    pair.reserve0 = Decimal(event.payload.reserve0)
-    pair.reserve1 = Decimal(event.payload.reserve1)
-    pair.block_timestamp_last = event.payload.block_timestamp
-    pair.klast = Decimal(event.payload.reserve0) * Decimal(event.payload.reserve1)
+    
+    # Update pair reserves and total supply
+    pair.reserve0 = reserve0
+    pair.reserve1 = reserve1
+    pair.total_supply = total_supply
+    pair.updated_at = block_timestamp
     await pair.save()
     
-    # Update or create position
-    position = await LiquidityPosition.get_or_none(
-        pair_address=event.data.from_address,
-        agent_address=hex(event.payload.sender),
+    # Get or create liquidity position
+    # Important: This creates or retrieves a LiquidityPosition linked to the pair
+    # The relationship to the pair is critical for the LiquidityEvent model
+    position, created = await models.LiquidityPosition.get_or_create(
+        pair_address=pair_address,
+        agent_address=sender_address,
+        defaults={
+            'liquidity': 0,
+            'deposits_token0': 0,
+            'deposits_token1': 0,
+            'withdrawals_token0': 0,
+            'withdrawals_token1': 0,
+            'created_at': block_timestamp,
+            'updated_at': block_timestamp,
+            'pair': pair,
+        }
     )
-    if position is None:
-        position = LiquidityPosition(
-            pair_address=event.data.from_address,
-            agent_address=hex(event.payload.sender),
-            liquidity=Decimal(event.payload.user_liquidity),
-            deposits_token0=Decimal(event.payload.amount0),
-            deposits_token1=Decimal(event.payload.amount1),
-            withdrawals_token0=Decimal(0),
-            withdrawals_token1=Decimal(0),
-            created_at=event.payload.block_timestamp,
-            updated_at=event.payload.block_timestamp,
-            pair=pair,
-        )
-    else:
-        position.liquidity = Decimal(event.payload.user_liquidity)
-        position.deposits_token0 += Decimal(event.payload.amount0)
-        position.deposits_token1 += Decimal(event.payload.amount1)
-        position.updated_at = event.payload.block_timestamp
-
+    
+    # Update liquidity position
+    position.liquidity += user_liquidity
+    position.deposits_token0 += amount0
+    position.deposits_token1 += amount1
+    position.updated_at = block_timestamp
+    # Ensure the relationship is maintained
+    position.pair = pair
     await position.save()
     
-    # Create event record
-    mint_event = LiquidityEvent(
-        transaction_hash=event.data.transaction_hash,
-        event_type='MINT',
-        sender=hex(event.payload.sender),
-        amount0=Decimal(event.payload.amount0),
-        amount1=Decimal(event.payload.amount1),
-        liquidity=Decimal(event.payload.total_liquidity),
-        created_at=event.payload.block_timestamp,
+    # Create liquidity event record
+    await models.LiquidityEvent.create(
+        transaction_hash=transaction_hash,
+        created_at=block_timestamp,
+        event_type=models.LiquidityEventType.MINT,
+        sender=sender_address,
+        amount0=amount0,
+        amount1=amount1,
+        liquidity=user_liquidity,
         pair=pair,
-        position=position,
+        position=position
     )
-    await mint_event.save()
+    
+    ctx.logger.info(
+        f"Mint event processed: sender={sender_address}, pair={pair_address}, "
+        f"amount0={amount0}, amount1={amount1}, liquidity={user_liquidity}"
+    )
