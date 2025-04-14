@@ -70,7 +70,6 @@ async def on_farm_created(
         owner='',  # Will be updated by other events
         total_staked=0,
         multiplier=multiplier,
-        locked=False,
         penalty_duration=penalty_duration,
         withdraw_penalty=withdraw_penalty,
         penalty_receiver=penalty_receiver,

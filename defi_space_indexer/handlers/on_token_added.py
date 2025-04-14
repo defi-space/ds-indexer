@@ -13,14 +13,6 @@ async def on_token_added(
     amount = event.payload.amount
     claim_amount = event.payload.claim_amount
     
-    # Handle max_supply which may not exist in all versions of the contract
-    max_supply = None
-    if hasattr(event.payload, 'max_supply'):
-        max_supply = event.payload.max_supply
-        ctx.logger.info(f"Max supply information available for token {token_address}: {max_supply}")
-    else:
-        ctx.logger.debug(f"No max_supply field in TokenAdded event for token {token_address}")
-    
     # Get faucet address and other data from event data
     faucet_address = event.data.from_address
     block_timestamp = event.payload.block_timestamp
@@ -44,7 +36,7 @@ async def on_token_added(
         defaults={
             'amount': amount,
             'claim_amount': claim_amount,
-            'max_supply': max_supply,
+            'claimed_amount': 0,  # Initialize claimed amount to zero
             'created_at': block_timestamp,
             'updated_at': block_timestamp,
             'faucet': faucet,
@@ -54,14 +46,11 @@ async def on_token_added(
     if not created:
         token.amount = amount
         token.claim_amount = claim_amount
-        if max_supply is not None:
-            token.max_supply = max_supply
         token.updated_at = block_timestamp
         token.faucet = faucet
         await token.save()
     
-    max_supply_str = f", max_supply={max_supply}" if max_supply is not None else ""
     ctx.logger.info(
         f"Token added to faucet: faucet={faucet_address}, token={token_address}, "
-        f"amount={amount}, claim_amount={claim_amount}{max_supply_str}"
+        f"amount={amount}, claim_amount={claim_amount}"
     )

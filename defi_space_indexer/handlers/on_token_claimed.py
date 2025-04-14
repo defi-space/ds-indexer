@@ -35,6 +35,8 @@ async def on_token_claimed(
     if token:
         # Update token amount
         token.amount = total_token_amount
+        # Update claimed amount by incrementing with the current claim
+        token.claimed_amount += amount
         token.updated_at = block_timestamp
         # Ensure the relationship is maintained
         token.faucet = faucet

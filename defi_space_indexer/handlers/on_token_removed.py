@@ -29,10 +29,10 @@ async def on_token_removed(
     
     if token:
         # Log before deleting
-        max_supply_str = f", max_supply: {token.max_supply}" if token.max_supply is not None else ""
         ctx.logger.info(
             f"Removing token {token_address} from faucet {faucet_address}, "
-            f"claim amount: {token.claim_amount}, amount: {token.amount}{max_supply_str}"
+            f"claim amount: {token.claim_amount}, amount: {token.amount}, "
+            f"claimed amount: {token.claimed_amount}"
         )
         
         # Update faucet tokens list

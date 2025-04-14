@@ -27,7 +27,8 @@ async def on_farm_config_updated(
     
     # Update the appropriate field in the Farm model based on field_name
     if field_name_str == "locked":
-        farm.locked = bool(new_value)
+        # Removed locked field handling
+        pass
     elif field_name_str == "multiplier":
         # Use string representation for large integers to avoid overflow
         farm.multiplier = str(new_value)

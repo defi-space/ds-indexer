@@ -47,7 +47,7 @@ class FaucetToken(Model):
     # Token distribution settings
     amount = fields.DecimalField(max_digits=100, decimal_places=0)  # Total token amount
     claim_amount = fields.DecimalField(max_digits=100, decimal_places=0)  # Amount per claim
-    max_supply = fields.DecimalField(max_digits=100, decimal_places=0, null=True)  # Maximum token supply
+    claimed_amount = fields.DecimalField(max_digits=100, decimal_places=0, default=0)  # Total amount claimed by users
     
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()

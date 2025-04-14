@@ -71,7 +71,6 @@ class Farm(Model):
     owner = fields.TextField()
     total_staked = fields.TextField()  # Changed from DecimalField to TextField
     multiplier = fields.TextField()
-    locked = fields.BooleanField()
     
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()
