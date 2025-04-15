@@ -47,6 +47,7 @@ async def on_game_session_created(
         session.owner = creator_address
         session.updated_at = block_timestamp
         session.factory = factory
+        session.game_session_index = session_index
         await session.save()
         return
         
@@ -90,6 +91,7 @@ async def on_game_session_created(
         created_at=block_timestamp,
         updated_at=block_timestamp,
         factory=factory,
+        game_session_index=session_index,
     )
     
     ctx.logger.info(

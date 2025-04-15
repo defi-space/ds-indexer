@@ -94,6 +94,7 @@ async def on_game_initialized(
         config_history=[],
         created_at=block_timestamp,
         updated_at=block_timestamp,
+        game_session_index=len(factory.game_sessions_list) if factory_address else 0,  # Set the session index based on position in list
     )
     
     # If we found a factory, update its reference to this session

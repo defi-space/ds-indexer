@@ -78,6 +78,7 @@ class GameSession(Model):
     total_rewards = fields.DecimalField(max_digits=100, decimal_places=0, default=0)
     current_window_index = fields.IntField(null=True)  # Index of the current active window
     
+    game_session_index = fields.IntField()
     # Lists
     stake_windows_list = fields.JSONField(default=list)  # Array of stake window indices
     agents_list = fields.JSONField(default=list)  # Array of agent addresses
