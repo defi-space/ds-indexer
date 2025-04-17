@@ -85,5 +85,5 @@ async def on_swap(
         f"Swap event processed: sender={sender_address}, pair={pair_address}, "
         f"amount0_in={amount0_in}, amount1_in={amount1_in}, "
         f"amount0_out={amount0_out}, amount1_out={amount1_out}, "
-        f"price_impact={price_impact:.6f if price_impact else 'N/A'}"
+        f"price_impact={f'{price_impact:.6f}' if price_impact is not None else 'N/A'}"
     )
