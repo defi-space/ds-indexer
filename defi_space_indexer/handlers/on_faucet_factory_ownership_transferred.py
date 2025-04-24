@@ -17,7 +17,7 @@ async def on_faucet_factory_ownership_transferred(
     # Update the factory model
     factory = await models.FaucetFactory.get_or_none(address=factory_address)
     if not factory:
-        ctx.logger.error(f"Factory {factory_address} not found when updating ownership from {previous_owner} to {new_owner}")
+        ctx.logger.error(f"AmmFactory {factory_address} not found when updating ownership from {previous_owner} to {new_owner}")
         return
         
     # Log the ownership change in the config history

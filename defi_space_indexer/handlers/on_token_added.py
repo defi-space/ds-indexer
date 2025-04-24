@@ -35,9 +35,9 @@ async def on_token_added(
         address=token_address,
         faucet_address=faucet_address,
         defaults={
-            'amount': amount,
-            'claim_amount': claim_amount,
-            'claimed_amount': 0,  # Initialize claimed amount to zero
+            'initial_amount': amount,
+            'amount_per_claim': claim_amount,
+            'total_claimed_amount': 0,  # Initialize claimed amount to zero
             'created_at': block_timestamp,
             'updated_at': block_timestamp,
             'faucet': faucet,
@@ -45,8 +45,8 @@ async def on_token_added(
     )
     
     if not created:
-        token.amount = amount
-        token.claim_amount = claim_amount
+        token.initial_amount = amount
+        token.amount_per_claim = claim_amount
         token.updated_at = block_timestamp
         token.faucet = faucet
         await token.save()

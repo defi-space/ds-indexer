@@ -33,24 +33,54 @@ async def on_swap(
         ctx.logger.warning(f"Pair {pair_address} not found when processing swap event")
         return
     
-    # Calculate price impact
-    # Price impact is the percentage change in the reserves ratio caused by this swap
+    # Calculate price impact using Uniswap V2 formula
     price_impact = None
     try:
-        # Get old reserves from the pair before the update
+        # Get old reserves (before the swap)
         old_reserve0 = pair.reserve0
         old_reserve1 = pair.reserve1
         
-        # Calculate price before swap (if reserves are valid)
-        if old_reserve0 > 0 and old_reserve1 > 0:
-            price_before = decimal.Decimal(old_reserve1) / decimal.Decimal(old_reserve0)
-            price_after = decimal.Decimal(reserve1) / decimal.Decimal(reserve0)
+        # Determine which token is being swapped in and which is being swapped out
+        if amount0_in > 0 and amount1_out > 0:
+            # Swapping token0 for token1
+            reserve_in = old_reserve0
+            reserve_out = old_reserve1
+            amount_in = amount0_in
+            amount_out = amount1_out
+        elif amount1_in > 0 and amount0_out > 0:
+            # Swapping token1 for token0
+            reserve_in = old_reserve1
+            reserve_out = old_reserve0
+            amount_in = amount1_in
+            amount_out = amount0_out
+        else:
+            # Can't determine swap direction, skip price impact calculation
+            price_impact = decimal.Decimal('0')
+        
+        if reserve_in > 0 and reserve_out > 0 and amount_in > 0 and amount_out > 0:
+            # Step 1: Calculate the swap fee (default 0.3% for Uniswap V2-like protocols)
+            fee = decimal.Decimal('0.003')  # 0.3%
             
-            # Calculate price impact as percentage change
-            if price_before > 0:
-                price_impact = abs((price_after - price_before) / price_before)
+            # Step 2: Calculate amountOut using the constant product formula
+            amount_in_with_fee = decimal.Decimal(amount_in) * (decimal.Decimal('1') - fee)
+            theoretical_amount_out = (amount_in_with_fee * decimal.Decimal(reserve_out)) / (decimal.Decimal(reserve_in) + amount_in_with_fee)
+            
+            # Step 3: Calculate effective price and market price
+            effective_price = decimal.Decimal(amount_in) / decimal.Decimal(amount_out)
+            market_price = decimal.Decimal(reserve_in) / decimal.Decimal(reserve_out)
+            
+            # Step 4: Calculate price impact percentage
+            if effective_price > 0:
+                price_impact = decimal.Decimal('1') - (market_price / effective_price)
+                
+                # Convert to percentage (keep as decimal for the database)
+                # No need to multiply by 100 as we'll store the raw value
+                
+                # Ensure price impact is positive and not negative
+                price_impact = abs(price_impact)
     except Exception as e:
         ctx.logger.warning(f"Error calculating price impact: {e}")
+        price_impact = decimal.Decimal('0')
     
     # Update pair reserves
     pair.reserve0 = reserve0

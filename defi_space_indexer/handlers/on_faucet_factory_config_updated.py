@@ -18,7 +18,7 @@ async def on_faucet_factory_config_updated(
     # Update the factory model
     factory = await models.FaucetFactory.get_or_none(address=factory_address)
     if not factory:
-        ctx.logger.error(f"Factory {factory_address} not found when updating config field {field_name}")
+        ctx.logger.error(f"AmmFactory {factory_address} not found when updating config field {field_name}")
         return
         
     # Log the config change in the history

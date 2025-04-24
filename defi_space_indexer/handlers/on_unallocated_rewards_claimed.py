@@ -33,6 +33,10 @@ async def on_unallocated_rewards_claimed(
     if reward:
         # Update unallocated rewards
         reward.unallocated_rewards = unallocated_rewards
+        
+        # Decrease remaining_amount when unallocated rewards are claimed
+        reward.remaining_amount = str(int(reward.remaining_amount) - int(amount))
+        
         reward.updated_at = block_timestamp
         await reward.save()
         

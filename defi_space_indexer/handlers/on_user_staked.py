@@ -50,8 +50,8 @@ async def on_user_staked(
         ctx.logger.warning(f"Agent with index {agent_index} not found for session {session_address}")
         return
     
-    # Update agent's total staked
-    agent.total_staked += amount
+    # Remove total_staked update - this is handled by the on_agent_updated handler
+    # to avoid double-counting
     agent.updated_at = block_timestamp
     await agent.save()
     

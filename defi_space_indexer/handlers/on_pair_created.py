@@ -19,9 +19,9 @@ async def on_pair_created(
     block_timestamp = event.payload.block_timestamp
     
     # Get factory from database
-    factory = await models.Factory.get_or_none(address=factory_address)
+    factory = await models.AmmFactory.get_or_none(address=factory_address)
     if not factory:
-        ctx.logger.warning(f"Factory {factory_address} not found when creating pair")
+        ctx.logger.warning(f"AmmFactory {factory_address} not found when creating pair")
         return
     
     # Update factory total pair count

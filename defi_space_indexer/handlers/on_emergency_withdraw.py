@@ -47,21 +47,26 @@ async def on_emergency_withdraw(
             f"in session={session_address} due to emergency withdrawal"
         )
         
-        # Update agents' total staked amounts
+        # Update agent's updated_at timestamp but don't modify total_staked
+        # total_staked is handled by the on_agent_updated handler
         for agent_index in agent_indexes:
-            agent = await models.Agent.get_or_none(
-                user_address=user_address,
-                agent_index=agent_index,
-                session_address=session_address
-            )
+            # Find the agent by index in the session's agents list
+            agent = None
+            for agent_address in session.agents_list:
+                agent_obj = await models.Agent.get_or_none(
+                    address=agent_address,
+                    session_address=session_address
+                )
+                if agent_obj and agent_obj.agent_index == agent_index:
+                    agent = agent_obj
+                    break
             
             if agent:
-                agent.total_stake = 0  # Reset stake as this is an emergency withdrawal
+                # Update timestamp only
                 agent.updated_at = block_timestamp
                 await agent.save()
                 ctx.logger.info(
-                    f"Reset total stake for agent with user={user_address}, "
-                    f"index={agent_index}, session={session_address}"
+                    f"Updated timestamp for agent with index={agent_index}, session={session_address}"
                 )
     
     # Create game event record for tracking

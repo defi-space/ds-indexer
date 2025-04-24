@@ -55,7 +55,9 @@ async def on_reward_added(
         address=reward_token_address,
         farm_address=farm_address,
         defaults={
+            'initial_amount': reward_amount,
             'unallocated_rewards': unallocated_rewards,
+            'remaining_amount': reward_amount,  # Initially, remaining = initial
             'rewards_duration': reward_duration,
             'period_finish': period_finish,
             'reward_rate': reward_rate,
@@ -70,7 +72,11 @@ async def on_reward_added(
     
     if not created:
         # Update existing reward
+        # If there is a new reward addition, add to the initial amount
+        reward.initial_amount = str(int(reward.initial_amount) + int(reward_amount))
         reward.unallocated_rewards = unallocated_rewards
+        # Update remaining amount by adding the new reward amount
+        reward.remaining_amount = str(int(reward.remaining_amount) + int(reward_amount))
         reward.rewards_duration = reward_duration
         reward.period_finish = period_finish
         reward.reward_rate = reward_rate

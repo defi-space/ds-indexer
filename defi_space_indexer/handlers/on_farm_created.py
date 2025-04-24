@@ -67,7 +67,7 @@ async def on_farm_created(
         factory_address=factory_address,
         lp_token_address=lp_token_address,
         farm_index=farm_index,
-        owner='',  # Will be updated by other events
+        owner=farm_factory.owner,
         total_staked=0,
         multiplier=multiplier,
         penalty_duration=penalty_duration,

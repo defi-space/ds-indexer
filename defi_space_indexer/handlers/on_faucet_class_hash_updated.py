@@ -17,7 +17,7 @@ async def on_faucet_class_hash_updated(
     # Update the factory model
     factory = await models.FaucetFactory.get_or_none(address=factory_address)
     if not factory:
-        ctx.logger.error(f"Factory {factory_address} not found when updating faucet class hash from {old_hash} to {new_hash}")
+        ctx.logger.error(f"AmmFactory {factory_address} not found when updating faucet class hash from {old_hash} to {new_hash}")
         return
         
     # Log the class hash change in the config history

@@ -38,9 +38,9 @@ async def on_reward_state_updated(
     if not agent_stake.rewards:
         agent_stake.rewards = {}
     
-    # Update reward state
-    agent_stake.reward_per_token_paid[reward_token_address] = reward_per_token_paid  # Already a string
-    agent_stake.rewards[reward_token_address] = rewards  # Already a string
+    # Update reward state - matching the contract's storage structure
+    agent_stake.reward_per_token_paid[reward_token_address] = reward_per_token_paid  # The user_reward_per_token_paid value
+    agent_stake.rewards[reward_token_address] = rewards  # The previously accumulated rewards
     agent_stake.updated_at = block_timestamp
     
     await agent_stake.save()
@@ -59,29 +59,56 @@ async def on_reward_state_updated(
         )
         return
     
-    reward_per_agent, created = await models.RewardPerAgent.get_or_create(
+    # Get current reward_per_token_stored from reward model
+    current_reward_per_token = reward.reward_per_token_stored
+    
+    # Get user's staked amount
+    balance = agent_stake.staked_amount
+    
+    # Calculate total pending rewards using the contract's earned function logic
+    total_last_pending_rewards = rewards  # Start with previously accumulated rewards
+    
+    # Only calculate additional rewards if user has a balance and reward_per_token has increased
+    if balance != "0" and int(current_reward_per_token) > int(reward_per_token_paid):
+        # Get token decimals for precision factor
+        decimals = reward.decimals
+        precision_factor = 10 ** decimals
+        
+        # Calculate new rewards: balance * (current_reward_per_token - user_reward_per_token_paid) / precision_factor
+        new_rewards = (int(balance) * (int(current_reward_per_token) - int(reward_per_token_paid))) // precision_factor
+        
+        # Add new rewards to previously accumulated rewards
+        total_last_pending_rewards = str(int(rewards) + new_rewards)
+    
+    # Try to get existing RewardPerAgent record
+    reward_per_agent = await models.RewardPerAgent.get_or_none(
         agent_address=user_address,
         reward_token_address=reward_token_address,
-        farm_address=farm_address,
-        defaults={
-            'pending_rewards': rewards,  # Already a string
-            'reward_per_token_paid': reward_per_token_paid,  # Already a string
-            'created_at': block_timestamp,
-            'updated_at': block_timestamp,
-            'agent_stake': agent_stake,
-            'reward': reward,
-        }
+        farm_address=farm_address
     )
     
-    if not created:
-        reward_per_agent.pending_rewards = rewards  # Already a string
-        reward_per_agent.reward_per_token_paid = reward_per_token_paid  # Already a string
+    if not reward_per_agent:
+        # Create new RewardPerAgent record if not exists
+        reward_per_agent = await models.RewardPerAgent.create(
+            agent_address=user_address,
+            reward_token_address=reward_token_address,
+            farm_address=farm_address,
+            last_pending_rewards=total_last_pending_rewards,  # Store the total calculated rewards
+            reward_per_token_paid=reward_per_token_paid,  # Store user_reward_per_token_paid
+            created_at=block_timestamp,
+            updated_at=block_timestamp,
+            agent_stake=agent_stake,
+            reward=reward
+        )
+    else:
+        # Update existing RewardPerAgent record with calculated values
+        reward_per_agent.last_pending_rewards = total_last_pending_rewards
+        reward_per_agent.reward_per_token_paid = reward_per_token_paid
         reward_per_agent.updated_at = block_timestamp
-        reward_per_agent.reward = reward  # Ensure reward relationship is maintained
         await reward_per_agent.save()
     
     ctx.logger.info(
         f"Reward state updated: user={user_address}, farm={farm_address}, "
         f"token={reward_token_address}, reward_per_token_paid={reward_per_token_paid}, "
-        f"rewards={rewards}"
+        f"rewards={rewards}, total_pending={total_last_pending_rewards}"
     )

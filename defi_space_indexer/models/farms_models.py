@@ -18,7 +18,7 @@ class FarmFactory(Model):
     - Tracks ownership transfers
     - Records farm implementations
     
-    Differs from Factory:
+    Differs from AmmFactory:
     - Manages yield farming vs trading
     - Creates farms vs trading pairs
     - Focuses on staking vs swapping
@@ -154,7 +154,9 @@ class Reward(Model):
     farm_address = fields.TextField()  # Farm this reward belongs to
     
     # Reward configuration
+    initial_amount = fields.TextField()  # Initial deposited reward amount
     unallocated_rewards = fields.TextField()
+    remaining_amount = fields.TextField()  # initial_amount - unallocated_rewards - harvested rewards
     rewards_duration = fields.TextField()
     period_finish = fields.TextField()
     reward_rate = fields.TextField()
@@ -187,7 +189,7 @@ class RewardPerAgent(Model):
     farm_address = fields.TextField()  # Farm address
     
     # Reward state
-    pending_rewards = fields.TextField()  # Changed from DecimalField to TextField
+    last_pending_rewards = fields.TextField()  # Changed from DecimalField to TextField
     reward_per_token_paid = fields.TextField()  # Changed from DecimalField to TextField
     
     created_at = fields.BigIntField()

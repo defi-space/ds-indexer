@@ -26,7 +26,6 @@ async def on_user_whitelisted(
         address=user_address,
         faucet_address=faucet_address,
         defaults={
-            'is_whitelisted': True,
             'created_at': block_timestamp,
             'updated_at': block_timestamp,
             'faucet': faucet,
@@ -34,8 +33,7 @@ async def on_user_whitelisted(
     )
     
     if not created:
-        # Update user whitelist status
-        user.is_whitelisted = True
+        # Just update timestamp
         user.updated_at = block_timestamp
         await user.save()
     

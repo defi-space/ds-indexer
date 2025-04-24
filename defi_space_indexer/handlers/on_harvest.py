@@ -58,11 +58,12 @@ async def on_harvest(
             agent_stake.reward_per_token_paid = {}
         agent_stake.reward_per_token_paid[reward_token_address] = reward_per_token_stored
         
-        # Update rewards
+        # Update accumulated rewards
         if not agent_stake.rewards:
             agent_stake.rewards = {}
-        # Reset harvested reward amount to 0
-        agent_stake.rewards[reward_token_address] = 0
+            
+        # After a harvest, the accumulated rewards are reset to 0 in the contract
+        agent_stake.rewards[reward_token_address] = "0"
         
         await agent_stake.save()
     
@@ -78,6 +79,26 @@ async def on_harvest(
             f"Reward not found for token {reward_token_address} in farm {farm_address} "
             f"when processing harvest event"
         )
+    else:
+        # Update reward remaining amount by subtracting harvested reward
+        reward.remaining_amount = str(int(reward.remaining_amount) - int(reward_amount))
+        reward.updated_at = block_timestamp
+        await reward.save()
+    
+    # Update RewardPerAgent record after harvest
+    reward_per_agent = await models.RewardPerAgent.get_or_none(
+        agent_address=user_address,
+        reward_token_address=reward_token_address,
+        farm_address=farm_address
+    )
+    
+    if reward_per_agent:
+        # After harvest, pending rewards should be 0 according to the contract logic
+        # because all accumulated rewards have been claimed
+        reward_per_agent.last_pending_rewards = "0"
+        reward_per_agent.reward_per_token_paid = reward_per_token_stored
+        reward_per_agent.updated_at = block_timestamp
+        await reward_per_agent.save()
     
     # Create reward event
     await models.RewardEvent.create(

@@ -3,7 +3,7 @@ from dipdup.models import Model
 
 from defi_space_indexer.models.amm_models import (
     # Core Models
-    Factory,
+    AmmFactory,
     Pair,
     LiquidityPosition,
     # Event Models
@@ -52,7 +52,7 @@ from defi_space_indexer.models.faucet_models import (
 
 __all__ = [
     # AMM Core Models
-    'Factory',
+    'AmmFactory',
     'Pair',
     'LiquidityPosition',
     

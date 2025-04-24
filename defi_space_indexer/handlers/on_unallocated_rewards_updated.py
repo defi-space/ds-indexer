@@ -32,6 +32,7 @@ async def on_unallocated_rewards_updated(
     if reward:
         # Update unallocated rewards
         reward.unallocated_rewards = new_amount
+        # Do not update remaining_amount here as requested
         reward.updated_at = block_timestamp
         await reward.save()
     

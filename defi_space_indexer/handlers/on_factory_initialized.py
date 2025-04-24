@@ -16,9 +16,9 @@ async def on_factory_initialized(
     block_timestamp = event.payload.block_timestamp
     
     # Check if factory already exists
-    factory = await models.Factory.get_or_none(address=factory_address)
+    factory = await models.AmmFactory.get_or_none(address=factory_address)
     if factory:
-        ctx.logger.info(f"Factory {factory_address} already initialized, updating")
+        ctx.logger.info(f"AmmFactory {factory_address} already initialized, updating")
         factory.owner = owner
         factory.fee_to = fee_to
         factory.pair_contract_class_hash = pair_contract_class_hash
@@ -27,7 +27,7 @@ async def on_factory_initialized(
         return
     
     # Create a new factory record
-    factory = await models.Factory.create(
+    factory = await models.AmmFactory.create(
         address=factory_address,
         owner=owner,
         fee_to=fee_to,
@@ -39,6 +39,6 @@ async def on_factory_initialized(
     )
     
     ctx.logger.info(
-        f"Factory initialized: address={factory_address}, owner={owner}, "
+        f"AmmFactory initialized: address={factory_address}, owner={owner}, "
         f"fee_to={fee_to}"
     )

@@ -34,9 +34,9 @@ async def on_token_claimed(
     
     if token:
         # Update token amount
-        token.amount = total_token_amount
-        # Update claimed amount by incrementing with the current claim
-        token.claimed_amount += amount
+        token.initial_amount = total_token_amount
+        token.amount_per_claim = amount
+        token.total_claimed_amount += amount
         token.updated_at = block_timestamp
         # Ensure the relationship is maintained
         token.faucet = faucet
@@ -47,7 +47,6 @@ async def on_token_claimed(
         address=sender_address,
         faucet_address=faucet_address,
         defaults={
-            'is_whitelisted': True,
             'last_claim': claimed_at,
             'created_at': block_timestamp,
             'updated_at': block_timestamp,

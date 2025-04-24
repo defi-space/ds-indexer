@@ -19,7 +19,7 @@ class FaucetFactory(Model):
     - Tracks ownership transfers
     - Records faucet implementations
     
-    Similar to FarmFactory and AMM Factory:
+    Similar to FarmFactory and AMM AmmFactory:
     - Creates and manages instances of specific contracts
     - Controls protocol-wide settings
     - Maintains ownership permissions
@@ -96,9 +96,9 @@ class FaucetToken(Model):
     faucet_address = fields.TextField()  # Address of the faucet this token belongs to
     
     # Token distribution settings
-    amount = fields.DecimalField(max_digits=100, decimal_places=0)  # Total token amount
-    claim_amount = fields.DecimalField(max_digits=100, decimal_places=0)  # Amount per claim
-    claimed_amount = fields.DecimalField(max_digits=100, decimal_places=0, default=0)  # Total amount claimed by users
+    initial_amount = fields.DecimalField(max_digits=100, decimal_places=0)  # Total token amount
+    amount_per_claim = fields.DecimalField(max_digits=100, decimal_places=0)  # Amount per claim
+    total_claimed_amount = fields.DecimalField(max_digits=100, decimal_places=0, default=0)  # Total amount claimed by users
     
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()
@@ -118,7 +118,6 @@ class WhitelistedUser(Model):
     Tracks user status and claim history.
     
     Key responsibilities:
-    - Maintains whitelist status
     - Tracks last claim timestamp
     - Links to faucet contract
     """
@@ -126,7 +125,6 @@ class WhitelistedUser(Model):
     faucet_address = fields.TextField()  # Address of the faucet this user belongs to
     
     # User status and history
-    is_whitelisted = fields.BooleanField(default=True)
     last_claim = fields.BigIntField(null=True)  # Timestamp of last claim
     
     created_at = fields.BigIntField()

@@ -15,9 +15,9 @@ async def on_fees_receiver_updated(
     block_timestamp = event.payload.block_timestamp
     
     # Get factory from database
-    factory = await models.Factory.get_or_none(address=factory_address)
+    factory = await models.AmmFactory.get_or_none(address=factory_address)
     if not factory:
-        ctx.logger.warning(f"Factory {factory_address} not found when updating fees receiver")
+        ctx.logger.warning(f"AmmFactory {factory_address} not found when updating fees receiver")
         return
     
     # Update the factory fee_to field
@@ -40,6 +40,6 @@ async def on_fees_receiver_updated(
     await factory.save()
     
     ctx.logger.info(
-        f"Factory fees receiver updated: factory={factory_address}, "
+        f"AmmFactory fees receiver updated: factory={factory_address}, "
         f"previous_fee_to={previous_fee_to}, new_fee_to={new_fee_to}"
     )

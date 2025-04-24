@@ -15,9 +15,9 @@ async def on_owner_updated(
     block_timestamp = event.payload.block_timestamp
     
     # Get factory from database
-    factory = await models.Factory.get_or_none(address=factory_address)
+    factory = await models.AmmFactory.get_or_none(address=factory_address)
     if not factory:
-        ctx.logger.warning(f"Factory {factory_address} not found when updating owner")
+        ctx.logger.warning(f"AmmFactory {factory_address} not found when updating owner")
         return
     
     # Update the factory owner
@@ -40,6 +40,6 @@ async def on_owner_updated(
     await factory.save()
     
     ctx.logger.info(
-        f"Factory owner updated: factory={factory_address}, "
+        f"AmmFactory owner updated: factory={factory_address}, "
         f"previous_owner={previous_owner}, new_owner={new_owner}"
     )

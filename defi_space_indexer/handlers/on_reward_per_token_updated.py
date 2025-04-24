@@ -46,6 +46,52 @@ async def on_reward_per_token_updated(
         reward.last_update_time = block_timestamp
         reward.updated_at = block_timestamp
         await reward.save()
+        
+        # Get token decimals for precision factor
+        decimals = reward.decimals
+        precision_factor = 10 ** decimals
+        
+        # Get all agent stakes for this farm
+        agent_stakes = await models.AgentStake.filter(farm_address=farm_address)
+        
+        # Update pending rewards for all agent stakes
+        for agent_stake in agent_stakes:
+            # Only process agents that have a balance
+            if agent_stake.staked_amount == "0":
+                continue
+                
+            # Get the agent's reward per token paid
+            if not agent_stake.reward_per_token_paid or reward_token_address not in agent_stake.reward_per_token_paid:
+                continue
+                
+            user_reward_per_token_paid = agent_stake.reward_per_token_paid[reward_token_address]
+            
+            # Get the agent's accumulated rewards
+            previous_rewards = "0"
+            if agent_stake.rewards and reward_token_address in agent_stake.rewards:
+                previous_rewards = agent_stake.rewards[reward_token_address]
+            
+            # Get or create the RewardPerAgent record
+            reward_per_agent = await models.RewardPerAgent.get_or_none(
+                agent_address=agent_stake.agent_address,
+                reward_token_address=reward_token_address,
+                farm_address=farm_address
+            )
+            
+            if reward_per_agent:
+                # Calculate new pending rewards using contract's earned function logic
+                if int(new_value) > int(user_reward_per_token_paid):
+                    # Calculate new rewards: balance * (current_reward_per_token - user_reward_per_token_paid) / precision_factor
+                    new_rewards = (int(agent_stake.staked_amount) * 
+                                (int(new_value) - int(user_reward_per_token_paid))) // precision_factor
+                    
+                    # Add new rewards to previously accumulated rewards
+                    total_last_pending_rewards = str(int(previous_rewards) + new_rewards)
+                    
+                    # Update the RewardPerAgent record
+                    reward_per_agent.last_pending_rewards = total_last_pending_rewards
+                    reward_per_agent.updated_at = block_timestamp
+                    await reward_per_agent.save()
     
     ctx.logger.info(
         f"Reward per token updated: farm={farm_address}, token={reward_token_address}, "

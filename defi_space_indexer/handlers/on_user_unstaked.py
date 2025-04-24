@@ -42,18 +42,10 @@ async def on_user_unstaked(
         )
         return
     
-    # Update agent's total staked
-    if agent.total_staked >= amount:
-        agent.total_staked -= amount
-        agent.updated_at = block_timestamp
-        await agent.save()
-    else:
-        ctx.logger.warning(
-            f"Agent {agent_index} has less staked amount ({agent.total_staked}) than unstake amount ({amount})"
-        )
-        agent.total_staked = 0
-        agent.updated_at = block_timestamp
-        await agent.save()
+    # Remove total_staked update - this is handled by the on_agent_updated handler
+    # to avoid double-counting
+    agent.updated_at = block_timestamp
+    await agent.save()
     
     # Get the user stake record
     user_stake = await models.UserStake.get_or_none(

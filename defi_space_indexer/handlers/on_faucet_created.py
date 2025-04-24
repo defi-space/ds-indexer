@@ -18,7 +18,7 @@ async def on_faucet_created(
     # Update the factory model with the new faucet count
     factory = await models.FaucetFactory.get_or_none(address=factory_address)
     if not factory:
-        ctx.logger.error(f"Factory {factory_address} not found when creating faucet {faucet_address}")
+        ctx.logger.error(f"AmmFactory {factory_address} not found when creating faucet {faucet_address}")
         return
     factory.faucet_count = event.payload.faucet_count + 1
     factory.updated_at = block_timestamp

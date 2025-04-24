@@ -16,15 +16,15 @@ async def on_amm_factory_config_updated(
     block_timestamp = event.payload.block_timestamp
     
     # Get factory from database
-    factory = await models.Factory.get_or_none(address=factory_address)
+    factory = await models.AmmFactory.get_or_none(address=factory_address)
     if not factory:
-        ctx.logger.warning(f"Factory {factory_address} not found when updating config")
+        ctx.logger.warning(f"AmmFactory {factory_address} not found when updating config")
         return
     
     # Convert felt252 field_name to string for readability
     field_name_str = str(field_name)
     
-    # Update the appropriate field in the Factory model based on field_name
+    # Update the appropriate field in the AmmFactory model based on field_name
     if field_name_str == "owner":
         factory.owner = f'0x{new_value:x}'
     elif field_name_str == "fee_to":
@@ -54,6 +54,6 @@ async def on_amm_factory_config_updated(
     await factory.save()
     
     ctx.logger.info(
-        f"Factory config updated: {factory_address}, field={field_name_str}, "
+        f"AmmFactory config updated: {factory_address}, field={field_name_str}, "
         f"old_value=0x{old_value:x}, new_value=0x{new_value:x}"
     )

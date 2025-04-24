@@ -32,8 +32,8 @@ async def on_token_removed(
         # Log before deleting
         ctx.logger.info(
             f"Removing token {token_address} from faucet {faucet_address}, "
-            f"claim amount: {token.claim_amount}, amount: {token.amount}, "
-            f"claimed amount: {token.claimed_amount}"
+            f"initial amount: {token.initial_amount}, amount per claim: {token.amount_per_claim}, "
+            f"total claimed amount: {token.total_claimed_amount}"
         )
         
         # Create claim event to track token removal
@@ -44,7 +44,7 @@ async def on_token_removed(
             user_address=faucet.owner,  # Using faucet owner as the user who removed the token
             token_address=token_address,
             faucet_address=faucet_address,
-            amount=token.amount,  # Recording the amount that was removed
+            amount=token.initial_amount,  # Recording the amount that was removed
             faucet=faucet,
             token=token,
             user=None,  # No specific user for token removal

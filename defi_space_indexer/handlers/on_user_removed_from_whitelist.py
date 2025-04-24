@@ -22,10 +22,8 @@ async def on_user_removed_from_whitelist(
     )
     
     if user:
-        # Update user whitelist status
-        user.is_whitelisted = False
-        user.updated_at = block_timestamp
-        await user.save()
+        # Delete the user since they are no longer whitelisted
+        await user.delete()
         
         ctx.logger.info(
             f"User removed from whitelist: user={user_address}, faucet={faucet_address}"

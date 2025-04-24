@@ -3,9 +3,9 @@ from dipdup.models import Model
 from enum import Enum
 
 
-class Factory(Model):
+class AmmFactory(Model):
     """
-    Represents an AMM Factory contract that creates and manages pairs.
+    Represents an AMM AmmFactory contract that creates and manages pairs.
     This is the top-level contract that controls the entire AMM protocol.
     
     Key responsibilities:
@@ -49,7 +49,7 @@ class Pair(Model):
     - Handles active trading vs historical records
     
     Relationships:
-    - Created by and linked to Factory
+    - Created by and linked to AmmFactory
     - Has many LiquidityPositions
     - Can be used in farming Reactors
     """
@@ -78,8 +78,8 @@ class Pair(Model):
     updated_at = fields.BigIntField()
     
     # Relationships
-    factory: fields.ForeignKeyField[Factory] = fields.ForeignKeyField(
-        'models.Factory', related_name='pairs'
+    factory: fields.ForeignKeyField[AmmFactory] = fields.ForeignKeyField(
+        'models.AmmFactory', related_name='pairs'
     )
 
 

@@ -4,7 +4,7 @@
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![DipDup 8.x](https://img.shields.io/badge/DipDup-8.x-green.svg)](https://dipdup.io/)
 
-A blockchain indexer built with DipDup for defi.space protocol, providing real-time data indexing and querying capabilities.
+A blockchain indexer built with DipDup for defi.space protocol, providing real-time data indexing and querying capabilities for Starknet.
 
 ## 📋 Table of Contents
 - [Overview](#overview)
@@ -20,25 +20,26 @@ A blockchain indexer built with DipDup for defi.space protocol, providing real-t
 - [Architecture](#architecture)
   - [Core Components](#core-components)
   - [Project Structure](#project-structure)
-- [API Examples](#api-examples)
 - [Performance Considerations](#performance-considerations)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## 🔍 Overview
 
-This indexer leverages DipDup, a powerful indexing framework to efficiently process and index blockchain data, making it readily available for applications and analytics.
+This indexer leverages DipDup, a powerful indexing framework to efficiently process and index StarkNet blockchain data, making it readily available for applications and analytics.
 
-The indexer tracks key protocol components including AMM (Automated Market Maker) operations and Yield Farming activities, providing comprehensive data for DeFi applications.
+The indexer tracks key protocol components including AMM (Automated Market Maker) operations, Yield Farming activities, Gaming Sessions, and Faucet operations, providing comprehensive data for DeFi applications.
 
 ## ✨ Features
 
 - **Real-time Indexing**: Process blockchain data as it's produced
-- **Comprehensive Data Models**: Track AMM and Yield Farming activities
+- **Comprehensive Data Models**: Track AMM, Yield Farming, Gaming, and Faucet activities
 - **Flexible Storage Options**: Support for SQLite (development) and PostgreSQL (production)
 - **Scalable Architecture**: Designed to handle growing data volumes
 - **Rich Query Capabilities**: Access detailed protocol metrics and user positions
 - **Production-Ready**: Docker Compose setup for production deployments
+- **Hasura Integration**: GraphQL API with rich query capabilities
+- **Periodic Jobs**: Automated data aggregation and metrics calculation
 
 ## 🚀 Installation
 
@@ -90,7 +91,7 @@ pdm venv create
 pdm add "dipdup>=8,<9" --venv
 
 # Activate virtual environment
-$(pdm venv activate)
+eval "$(pdm venv activate)"
 ```
 
 ## 📊 Usage
@@ -116,14 +117,14 @@ dipdup -c . -c configs/dipdup.sqlite.yaml run
 #### Docker Compose Stack (Production)
 ```bash
 # Navigate to deploy directory
-cd deploy
+cd defi_space_indexer/deploy
 
 # Copy and configure environment variables
-cp .env.default .env
+cp ../.env.example ../.env
 # Edit .env file as needed
 
 # Start the stack (PostgreSQL + Hasura)
-docker-compose up
+docker-compose -f compose.yaml up
 ```
 
 ### Configuration Options
@@ -137,7 +138,9 @@ Key configuration files:
 - `defi_space_indexer/dipdup.yaml`: Main configuration file
 - `defi_space_indexer/configs/dipdup.sqlite.yaml`: SQLite-specific configuration
 - `defi_space_indexer/configs/dipdup.compose.yaml`: Docker Compose configuration
-- `defi_space_indexer/env.example`: Template for environment variables
+- `defi_space_indexer/configs/dipdup.swarm.yaml`: Docker Swarm configuration
+- `defi_space_indexer/configs/replay.yaml`: Replay configuration
+- `defi_space_indexer/.env.example`: Template for environment variables
 
 ### Development Commands
 
@@ -164,25 +167,40 @@ make up
 
 # Stop Docker Compose stack
 make down
+
+# Prune Docker resources
+make prune
 ```
 
 ## 🏗️ Architecture
 
 ### Core Components
 
-The indexer tracks two main protocol components:
+The indexer tracks four main protocol components:
 
 #### AMM (Automated Market Maker)
-- Factory contract that creates and manages trading pairs
+- AmmFactory contract that creates and manages trading pairs
 - Trading pairs for token swaps
 - Liquidity positions and events
 - Swap events and pricing data
 
 #### Yield Farming
-- Powerplant contract for managing farming pools
-- Reactor contracts for individual farming pools
+- FarmFactory contract for managing farming pools
+- Farm contracts for individual farming pools
 - User stakes and rewards
 - Staking and reward events
+
+#### Game Sessions
+- GameFactory contract for creating game sessions
+- Game sessions for gamified staking
+- Staking windows and user stakes
+- Agent creation and management
+
+#### Faucet
+- FaucetFactory contract for creating token faucets
+- Token claiming functionality
+- Whitelist management for claimable tokens
+- Claim tracking and interval management
 
 ### Project Structure
 
@@ -194,7 +212,8 @@ defi_space_indexer/
 ├── configs/              # Configuration variants
 │   ├── dipdup.sqlite.yaml
 │   ├── dipdup.compose.yaml
-│   └── dipdup.swarm.yaml
+│   ├── dipdup.swarm.yaml
+│   └── replay.yaml
 ├── deploy/               # Deployment configurations
 ├── handlers/             # Event handlers
 │   ├── on_pair_created.py
@@ -203,159 +222,42 @@ defi_space_indexer/
 │   └── ...
 ├── hooks/                # Periodic jobs and callbacks
 │   ├── active_staking_window.py
+│   ├── calculate_game_metrics.py
 │   └── ...
 ├── models/               # Data models
 │   ├── amm_models.py
-│   └── farming_models.py
+│   ├── farming_models.py
+│   ├── game_models.py
+│   └── faucet_models.py
+├── graphql/              # GraphQL schemas and queries
+├── hasura/               # Hasura configuration
 ├── sql/                  # SQL queries
 ├── types/                # Type definitions
 ├── dipdup.yaml           # Main configuration
-└── env.example           # Environment variables template
+├── Makefile              # Development commands
+└── .env.example          # Environment variables template
 ```
 
 Key components:
-- **Handlers**: Process blockchain events (25+ event types)
-- **Models**: Define data structures for AMM and Farming
+- **Handlers**: Process blockchain events (50+ event types)
+- **Models**: Define data structures for AMM, Farming, Gaming, and Faucet
 - **Hooks**: Implement periodic jobs for metrics calculation
 - **Configs**: Provide different deployment configurations
-
-## 💻 API Examples
-
-### 1. Get Most Profitable Pools
-Find the most profitable pools based on fees, APY, and volume.
-
-```typescript
-async function getMostProfitablePools(minTVL: u256 = 10000) {
-    const pools = await Pair.find({
-        tvl_usd: { $gt: minTVL }
-    })
-    .sort({ apy_24h: -1 })
-    .limit(10)
-    .select({
-        token0_address: 1,
-        token1_address: 1,
-        volume_24h: 1,
-        tvl_usd: 1,
-        apy_24h: 1,
-        accumulated_fees_token0: 1,
-        accumulated_fees_token1: 1
-    });
-
-    return pools.map(pool => ({
-        pair: `${pool.token0_address}-${pool.token1_address}`,
-        volume24h: pool.volume_24h,
-        tvl: pool.tvl_usd,
-        apy: pool.apy_24h,
-        totalFees: {
-            token0: pool.accumulated_fees_token0,
-            token1: pool.accumulated_fees_token1
-        }
-    }));
-}
-```
-
-### 2. Get User's Complete DeFi Position
-Get a complete overview of a user's positions across both AMM and farming.
-
-```typescript
-async function getUserPositions(userAddress: ContractAddress) {
-    // Get AMM positions
-    const lpPositions = await LiquidityPosition.find({
-        user_address: userAddress,
-        liquidity: { $gt: 0 }
-    }).populate('pair');
-
-    // Get farming positions
-    const farmPositions = await UserStake.find({
-        user_address: userAddress,
-        staked_amount: { $gt: 0 }
-    }).populate({
-        path: 'reactor',
-        populate: { path: 'reward_data' }
-    });
-
-    return {
-        liquidityPositions: lpPositions.map(pos => ({
-            pair: pos.pair_address,
-            liquidity: pos.liquidity,
-            value: pos.usd_value,
-            returns: {
-                apy: pos.apy_earned,
-                deposits: {
-                    token0: pos.deposits_token0,
-                    token1: pos.deposits_token1
-                },
-                withdrawals: {
-                    token0: pos.withdrawals_token0,
-                    token1: pos.withdrawals_token1
-                }
-            }
-        })),
-        farmingPositions: farmPositions.map(pos => ({
-            farm: pos.reactor_address,
-            staked: pos.staked_amount,
-            pendingRewards: Object.entries(pos.rewards),
-            canWithdraw: pos.penalty_end_time <= Date.now() / 1000
-        })),
-        totalValueLocked: lpPositions.reduce((sum, pos) => sum + pos.usd_value, 0)
-    };
-}
-```
-
-### 3. Protocol Overview
-Get comprehensive protocol metrics for monitoring.
-
-```typescript
-async function getProtocolOverview() {
-    const [factory, powerplant] = await Promise.all([
-        Factory.findOne().sort({ created_at: -1 }),
-        Powerplant.findOne().sort({ created_at: -1 })
-    ]);
-
-    // Get active pairs and reactors
-    const [pairs, reactors] = await Promise.all([
-        Pair.find(),
-        Reactor.find()
-    ]);
-
-    // Calculate overall metrics
-    const totalAMMTVL = pairs.reduce((sum, p) => sum + p.tvl_usd, 0);
-    const totalFarmTVL = powerplant.total_value_locked;
-    
-    const largestPool = pairs.reduce(
-        (max, p) => p.tvl_usd > max.tvl ? { address: p.pk, tvl: p.tvl_usd } : max,
-        { address: '', tvl: 0 }
-    );
-
-    return {
-        metrics: {
-            totalValueLocked: totalAMMTVL + totalFarmTVL,
-            activePairs: factory.num_of_pairs,
-            activeFarms: powerplant.reactor_count,
-            averageAPY: pairs.reduce((sum, p) => sum + p.apy_24h, 0) / pairs.length
-        },
-        topPool: {
-            address: largestPool.address,
-            tvlShare: (largestPool.tvl / totalAMMTVL) * 100
-        },
-        volume24h: pairs.reduce((sum, p) => sum + p.volume_24h, 0)
-    };
-}
-```
 
 ## ⚡ Performance Considerations
 
 - **Hardware Requirements**:
-  - Minimum: 256 MB RAM, 1 CPU core
-  - Recommended: 1GB+ RAM for average projects
-  - Storage: Depends on indexed data volume
-  - Note: RAM requirements increase with number of indexes
+  - Minimum: 1 GB RAM, 1 CPU core, 20 GB storage
+  - Recommended: 2 GB+ RAM, 2+ CPU cores, 50+ GB SSD storage
+  - Production: 4 GB+ RAM, 4+ CPU cores, 100+ GB SSD storage
 
 - **Optimization Tips**:
   - Use appropriate database indexes for frequent queries
   - Consider sharding for large datasets
   - Monitor memory usage during sync operations
   - Use batch processing for high-volume operations
+  - For production, use PostgreSQL instead of SQLite
+  - Enable connection pooling for database connections
 
 ## 🤝 Contributing
 
