@@ -15,6 +15,7 @@ async def on_token_added(
     
     # Get faucet address and other data from event data
     faucet_address = event.data.from_address
+    transaction_hash = event.data.transaction_hash
     block_timestamp = event.payload.block_timestamp
     
     # Get faucet from database
@@ -49,6 +50,20 @@ async def on_token_added(
         token.updated_at = block_timestamp
         token.faucet = faucet
         await token.save()
+    
+    # Create claim event to track token addition
+    await models.ClaimEvent.create(
+        transaction_hash=transaction_hash,
+        created_at=block_timestamp,
+        event_type=models.ClaimEventType.TOKEN_ADDED,
+        user_address=faucet.owner,  # Using faucet owner as the user who added the token
+        token_address=token_address,
+        faucet_address=faucet_address,
+        amount=amount,
+        faucet=faucet,
+        token=token,
+        user=None,  # No specific user for token addition
+    )
     
     ctx.logger.info(
         f"Token added to faucet: faucet={faucet_address}, token={token_address}, "

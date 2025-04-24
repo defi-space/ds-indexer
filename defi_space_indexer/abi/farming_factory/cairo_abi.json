@@ -77,6 +77,22 @@
         "type": "function"
       },
       {
+        "name": "get_farms_by_game_session_id",
+        "inputs": [
+          {
+            "type": "core::integer::u64",
+            "name": "game_session_id"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::starknet::contract_address::ContractAddress>"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
         "name": "create_farm",
         "inputs": [
           {
@@ -102,6 +118,10 @@
           {
             "type": "core::integer::u256",
             "name": "withdraw_penalty"
+          },
+          {
+            "type": "core::integer::u64",
+            "name": "game_session_id"
           }
         ],
         "outputs": [
@@ -145,10 +165,6 @@
       {
         "type": "core::starknet::class_hash::ClassHash",
         "name": "farm_class_hash"
-      },
-      {
-        "type": "core::integer::u64",
-        "name": "game_session_id"
       }
     ]
   },
@@ -170,11 +186,6 @@
       {
         "type": "core::starknet::class_hash::ClassHash",
         "name": "farm_class_hash",
-        "kind": "data"
-      },
-      {
-        "type": "core::integer::u64",
-        "name": "game_session_id",
         "kind": "data"
       },
       {

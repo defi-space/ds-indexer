@@ -1,8 +1,8 @@
 [
   {
     "type": "impl",
-    "name": "AMMFactory",
-    "interface_name": "ds::amm::src::AMMFactory::IAMMFactory"
+    "name": "FaucetFactoryImpl",
+    "interface_name": "ds::faucet::whitelisted::src::FaucetFactory::IFaucetFactory"
   },
   {
     "type": "struct",
@@ -20,50 +20,8 @@
   },
   {
     "type": "interface",
-    "name": "ds::amm::src::AMMFactory::IAMMFactory",
+    "name": "ds::faucet::whitelisted::src::FaucetFactory::IFaucetFactory",
     "items": [
-      {
-        "name": "get_pair",
-        "inputs": [
-          {
-            "type": "core::starknet::contract_address::ContractAddress",
-            "name": "token_0"
-          },
-          {
-            "type": "core::starknet::contract_address::ContractAddress",
-            "name": "token_1"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::starknet::contract_address::ContractAddress"
-          }
-        ],
-        "state_mutability": "view",
-        "type": "function"
-      },
-      {
-        "name": "get_num_of_pairs",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::integer::u256"
-          }
-        ],
-        "state_mutability": "view",
-        "type": "function"
-      },
-      {
-        "name": "get_fee_to",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::starknet::contract_address::ContractAddress"
-          }
-        ],
-        "state_mutability": "view",
-        "type": "function"
-      },
       {
         "name": "get_owner",
         "inputs": [],
@@ -76,18 +34,34 @@
         "type": "function"
       },
       {
-        "name": "get_pair_contract_class_hash",
+        "name": "get_faucet_count",
         "inputs": [],
         "outputs": [
           {
-            "type": "core::starknet::class_hash::ClassHash"
+            "type": "core::integer::u256"
           }
         ],
         "state_mutability": "view",
         "type": "function"
       },
       {
-        "name": "get_pairs_by_game_session_id",
+        "name": "get_faucet_by_index",
+        "inputs": [
+          {
+            "type": "core::integer::u256",
+            "name": "index"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_faucets_by_game_session_id",
         "inputs": [
           {
             "type": "core::integer::u64",
@@ -103,19 +77,15 @@
         "type": "function"
       },
       {
-        "name": "create_pair",
+        "name": "create_faucet",
         "inputs": [
-          {
-            "type": "core::starknet::contract_address::ContractAddress",
-            "name": "tokenA"
-          },
-          {
-            "type": "core::starknet::contract_address::ContractAddress",
-            "name": "tokenB"
-          },
           {
             "type": "core::integer::u64",
             "name": "game_session_id"
+          },
+          {
+            "type": "core::integer::u64",
+            "name": "claim_interval"
           }
         ],
         "outputs": [
@@ -127,11 +97,11 @@
         "type": "function"
       },
       {
-        "name": "set_fee_to",
+        "name": "transfer_ownership",
         "inputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress",
-            "name": "new_fee_to"
+            "name": "new_owner_address"
           }
         ],
         "outputs": [],
@@ -139,23 +109,11 @@
         "type": "function"
       },
       {
-        "name": "set_owner",
-        "inputs": [
-          {
-            "type": "core::starknet::contract_address::ContractAddress",
-            "name": "new_owner"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external",
-        "type": "function"
-      },
-      {
-        "name": "replace_pair_contract_hash",
+        "name": "change_faucet_class_hash",
         "inputs": [
           {
             "type": "core::starknet::class_hash::ClassHash",
-            "name": "new_pair_contract_class_hash"
+            "name": "faucet_class_hash"
           }
         ],
         "outputs": [],
@@ -170,18 +128,18 @@
     "inputs": [
       {
         "type": "core::starknet::class_hash::ClassHash",
-        "name": "pair_contract_class_hash"
+        "name": "faucet_class_hash"
       }
     ]
   },
   {
     "type": "event",
-    "name": "ds::amm::src::AMMFactory::AMMFactory::FactoryInitialized",
+    "name": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::FaucetFactoryInitialized",
     "kind": "struct",
     "members": [
       {
         "type": "core::starknet::contract_address::ContractAddress",
-        "name": "factory_address",
+        "name": "faucet_factory",
         "kind": "data"
       },
       {
@@ -190,13 +148,8 @@
         "kind": "data"
       },
       {
-        "type": "core::starknet::contract_address::ContractAddress",
-        "name": "fee_to",
-        "kind": "data"
-      },
-      {
         "type": "core::starknet::class_hash::ClassHash",
-        "name": "pair_contract_class_hash",
+        "name": "faucet_class_hash",
         "kind": "data"
       },
       {
@@ -208,37 +161,12 @@
   },
   {
     "type": "event",
-    "name": "ds::amm::src::AMMFactory::AMMFactory::PairCreated",
+    "name": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::FaucetCreated",
     "kind": "struct",
     "members": [
       {
         "type": "core::starknet::contract_address::ContractAddress",
-        "name": "token0",
-        "kind": "data"
-      },
-      {
-        "type": "core::starknet::contract_address::ContractAddress",
-        "name": "token1",
-        "kind": "data"
-      },
-      {
-        "type": "core::starknet::contract_address::ContractAddress",
-        "name": "pair",
-        "kind": "data"
-      },
-      {
-        "type": "core::integer::u256",
-        "name": "total_pairs",
-        "kind": "data"
-      },
-      {
-        "type": "core::starknet::class_hash::ClassHash",
-        "name": "pair_contract_class_hash",
-        "kind": "data"
-      },
-      {
-        "type": "core::starknet::contract_address::ContractAddress",
-        "name": "factory_address",
+        "name": "faucet",
         "kind": "data"
       },
       {
@@ -247,6 +175,26 @@
         "kind": "data"
       },
       {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "faucet_factory",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "claim_interval",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "faucet_index",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u32",
+        "name": "faucet_count",
+        "kind": "data"
+      },
+      {
         "type": "core::integer::u64",
         "name": "block_timestamp",
         "kind": "data"
@@ -255,34 +203,7 @@
   },
   {
     "type": "event",
-    "name": "ds::amm::src::AMMFactory::AMMFactory::FeesReceiverUpdated",
-    "kind": "struct",
-    "members": [
-      {
-        "type": "core::starknet::contract_address::ContractAddress",
-        "name": "previous_fee_to",
-        "kind": "data"
-      },
-      {
-        "type": "core::starknet::contract_address::ContractAddress",
-        "name": "new_fee_to",
-        "kind": "data"
-      },
-      {
-        "type": "core::starknet::contract_address::ContractAddress",
-        "name": "factory_address",
-        "kind": "data"
-      },
-      {
-        "type": "core::integer::u64",
-        "name": "block_timestamp",
-        "kind": "data"
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "name": "ds::amm::src::AMMFactory::AMMFactory::OwnerUpdated",
+    "name": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::OwnershipTransferred",
     "kind": "struct",
     "members": [
       {
@@ -297,7 +218,7 @@
       },
       {
         "type": "core::starknet::contract_address::ContractAddress",
-        "name": "factory_address",
+        "name": "faucet_factory",
         "kind": "data"
       },
       {
@@ -309,7 +230,7 @@
   },
   {
     "type": "event",
-    "name": "ds::amm::src::AMMFactory::AMMFactory::PairContractClassHashUpdated",
+    "name": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::FaucetClassHashUpdated",
     "kind": "struct",
     "members": [
       {
@@ -324,7 +245,7 @@
       },
       {
         "type": "core::starknet::contract_address::ContractAddress",
-        "name": "factory_address",
+        "name": "faucet_factory",
         "kind": "data"
       },
       {
@@ -336,7 +257,7 @@
   },
   {
     "type": "event",
-    "name": "ds::amm::src::AMMFactory::AMMFactory::ConfigUpdated",
+    "name": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::ConfigUpdated",
     "kind": "struct",
     "members": [
       {
@@ -356,7 +277,7 @@
       },
       {
         "type": "core::starknet::contract_address::ContractAddress",
-        "name": "factory_address",
+        "name": "faucet_factory",
         "kind": "data"
       },
       {
@@ -368,36 +289,31 @@
   },
   {
     "type": "event",
-    "name": "ds::amm::src::AMMFactory::AMMFactory::Event",
+    "name": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::Event",
     "kind": "enum",
     "variants": [
       {
-        "type": "ds::amm::src::AMMFactory::AMMFactory::FactoryInitialized",
-        "name": "FactoryInitialized",
+        "type": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::FaucetFactoryInitialized",
+        "name": "FaucetFactoryInitialized",
         "kind": "nested"
       },
       {
-        "type": "ds::amm::src::AMMFactory::AMMFactory::PairCreated",
-        "name": "PairCreated",
+        "type": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::FaucetCreated",
+        "name": "FaucetCreated",
         "kind": "nested"
       },
       {
-        "type": "ds::amm::src::AMMFactory::AMMFactory::FeesReceiverUpdated",
-        "name": "FeesReceiverUpdated",
+        "type": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::OwnershipTransferred",
+        "name": "OwnershipTransferred",
         "kind": "nested"
       },
       {
-        "type": "ds::amm::src::AMMFactory::AMMFactory::OwnerUpdated",
-        "name": "OwnerUpdated",
+        "type": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::FaucetClassHashUpdated",
+        "name": "FaucetClassHashUpdated",
         "kind": "nested"
       },
       {
-        "type": "ds::amm::src::AMMFactory::AMMFactory::PairContractClassHashUpdated",
-        "name": "PairContractClassHashUpdated",
-        "kind": "nested"
-      },
-      {
-        "type": "ds::amm::src::AMMFactory::AMMFactory::ConfigUpdated",
+        "type": "ds::faucet::whitelisted::src::FaucetFactory::FaucetFactory::ConfigUpdated",
         "name": "ConfigUpdated",
         "kind": "nested"
       }

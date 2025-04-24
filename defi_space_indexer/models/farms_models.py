@@ -32,9 +32,6 @@ class FarmFactory(Model):
     farm_class_hash = fields.TextField()
     config_history = fields.JSONField()  # List of {field, old_value, new_value, timestamp}
     
-    # Game integration
-    game_session_id = fields.TextField()
-    
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()
 

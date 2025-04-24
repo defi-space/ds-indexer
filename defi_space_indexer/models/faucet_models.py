@@ -1,11 +1,47 @@
 from dipdup import fields
 from dipdup.models import Model
+from enum import Enum
+
+
+class FaucetFactory(Model):
+    """
+    Represents a FaucetFactory contract that creates and manages faucets.
+    This is the top-level contract that controls the faucet protocol.
+    
+    Key responsibilities:
+    - Creates new faucet instances
+    - Tracks total number of faucets
+    - Manages protocol configuration
+    - Maintains ownership and administrative settings
+    
+    Historical tracking:
+    - Stores configuration changes in config_history
+    - Tracks ownership transfers
+    - Records faucet implementations
+    
+    Similar to FarmFactory and AMM Factory:
+    - Creates and manages instances of specific contracts
+    - Controls protocol-wide settings
+    - Maintains ownership permissions
+    """
+    address = fields.TextField(primary_key=True)  # ContractAddress
+    
+    # Core data
+    faucet_count = fields.IntField()
+    
+    # Config with history
+    owner = fields.TextField()  # Current owner
+    faucet_class_hash = fields.TextField()  # Current implementation
+    config_history = fields.JSONField(default=list)  # List of {field, old_value, new_value, timestamp}
+    
+    created_at = fields.BigIntField()
+    updated_at = fields.BigIntField()
 
 
 class Faucet(Model):
     """
     Represents a Faucet contract that distributes tokens to whitelisted users.
-    This is the main contract that controls token distribution.
+    This is an instance created by the FaucetFactory that controls token distribution.
     
     Key responsibilities:
     - Manages whitelisted users
@@ -14,12 +50,19 @@ class Faucet(Model):
     - Maintains ownership settings
     
     Relationships:
+    - Created by and linked to FaucetFactory
     - Has many FaucetTokens (available tokens)
     - Has many WhitelistedUsers (users eligible for claims)
     """
     address = fields.TextField(primary_key=True)  # ContractAddress
+    
+    # Creation data
+    factory_address = fields.TextField()  # Address of factory that created this faucet
+    faucet_index = fields.IntField()  # Index in the factory's list
+    
+    # Core configuration
     owner = fields.TextField()  # ContractAddress
-    claim_interval = fields.BigIntField()  # Interval between claims
+    claim_interval = fields.TextField()  # Interval between claims, using TextField to handle large integers
     
     # Game integration
     game_session_id = fields.IntField(null=True)  # ID for game session integration
@@ -27,8 +70,16 @@ class Faucet(Model):
     # Lists
     tokens_list = fields.JSONField(default=list)  # Array of token addresses
     
+    # Config with history
+    config_history = fields.JSONField(default=list)  # List of {field, old_value, new_value, timestamp}
+    
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()
+    
+    # Relationships
+    factory: fields.ForeignKeyField[FaucetFactory] = fields.ForeignKeyField(
+        'models.FaucetFactory', related_name='faucets'
+    )
 
 
 class FaucetToken(Model):
@@ -90,6 +141,11 @@ class WhitelistedUser(Model):
         unique_together = [('address', 'faucet_address')]
 
 
+class ClaimEventType(Enum):
+    CLAIM = "CLAIM"
+    TOKEN_ADDED = "TOKEN_ADDED"
+    TOKEN_REMOVED = "TOKEN_REMOVED"
+
 class ClaimEvent(Model):
     """
     Records individual token claim events.
@@ -109,6 +165,7 @@ class ClaimEvent(Model):
     transaction_hash = fields.TextField()
     created_at = fields.BigIntField()
     
+    event_type = fields.EnumField(ClaimEventType)
     user_address = fields.TextField()  # User who claimed
     token_address = fields.TextField()  # Token that was claimed
     faucet_address = fields.TextField()  # Faucet contract address
@@ -119,8 +176,8 @@ class ClaimEvent(Model):
         'models.Faucet', related_name='claims'
     )
     token: fields.ForeignKeyField[FaucetToken] = fields.ForeignKeyField(
-        'models.FaucetToken', related_name='claims'
+        'models.FaucetToken', related_name='claims', null=True
     )
     user: fields.ForeignKeyField[WhitelistedUser] = fields.ForeignKeyField(
-        'models.WhitelistedUser', related_name='claims'
+        'models.WhitelistedUser', related_name='claims', null=True
     ) 

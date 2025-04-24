@@ -65,6 +65,7 @@ async def on_token_claimed(
         await models.ClaimEvent.create(
             transaction_hash=transaction_hash,
             created_at=block_timestamp,
+            event_type=models.ClaimEventType.CLAIM,
             user_address=sender_address,
             token_address=token_address,
             faucet_address=faucet_address,

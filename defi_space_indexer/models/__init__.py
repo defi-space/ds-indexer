@@ -41,11 +41,13 @@ from defi_space_indexer.models.game_models import (
 
 from defi_space_indexer.models.faucet_models import (
     # Core Models
+    FaucetFactory,
     Faucet,
     FaucetToken,
     WhitelistedUser,
     # Event Models
     ClaimEvent,
+    ClaimEventType,
 )
 
 __all__ = [
@@ -85,10 +87,12 @@ __all__ = [
     'GameEventType',
     
     # Faucet Core Models
+    'FaucetFactory',
     'Faucet',
     'FaucetToken',
     'WhitelistedUser',
     
     # Faucet Event Models
     'ClaimEvent',
+    'ClaimEventType',
 ]

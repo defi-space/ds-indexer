@@ -14,6 +14,7 @@ async def on_token_removed(
     
     # Get faucet address from event data
     faucet_address = event.data.from_address
+    transaction_hash = event.data.transaction_hash
     
     # Get faucet from database
     faucet = await models.Faucet.get_or_none(address=faucet_address)
@@ -33,6 +34,20 @@ async def on_token_removed(
             f"Removing token {token_address} from faucet {faucet_address}, "
             f"claim amount: {token.claim_amount}, amount: {token.amount}, "
             f"claimed amount: {token.claimed_amount}"
+        )
+        
+        # Create claim event to track token removal
+        await models.ClaimEvent.create(
+            transaction_hash=transaction_hash,
+            created_at=block_timestamp,
+            event_type=models.ClaimEventType.TOKEN_REMOVED,
+            user_address=faucet.owner,  # Using faucet owner as the user who removed the token
+            token_address=token_address,
+            faucet_address=faucet_address,
+            amount=token.amount,  # Recording the amount that was removed
+            faucet=faucet,
+            token=token,
+            user=None,  # No specific user for token removal
         )
         
         # Update faucet tokens list

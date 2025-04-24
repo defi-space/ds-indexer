@@ -61,9 +61,14 @@ contracts:
     address: ${GAME_SESSION_ADDRESS} # Template
     typename: game_session
 
+  faucet_factory:
+    kind: starknet
+    address: ${FAUCET_FACTORY_ADDRESS}
+    typename: faucet_factory
+
   faucet:
     kind: starknet
-    address: ${FAUCET_ADDRESS}
+    address: ${FAUCET_ADDRESS} # Template
     typename: faucet
 
 indexes:
@@ -139,41 +144,26 @@ indexes:
         contract: game_factory
         name: ConfigUpdated
 
-  faucet_events:
+  faucet_factory_events:
     kind: starknet.events
-    first_level: ${FAUCET_FIRST_LEVEL}
+    first_level: ${FAUCET_FACTORY_FIRST_LEVEL}
     datasources:
       - node
     handlers:
-      - callback: on_faucet_initialized
-        contract: faucet
-        name: FaucetInitialized
-      - callback: on_token_claimed
-        contract: faucet
-        name: Claim
-      - callback: on_user_whitelisted
-        contract: faucet
-        name: AddedToWhitelist
-      - callback: on_token_added
-        contract: faucet
-        name: TokenAdded
-      - callback: on_token_removed
-        contract: faucet
-        name: TokenRemoved
-      - callback: on_user_removed_from_whitelist
-        contract: faucet
-        name: RemovedFromWhitelist
-      - callback: on_claim_interval_updated
-        contract: faucet
-        name: ClaimIntervalUpdated
-      - callback: on_faucet_ownership_transferred
-        contract: faucet
+      - callback: on_faucet_factory_initialized
+        contract: faucet_factory
+        name: FaucetFactoryInitialized
+      - callback: on_faucet_created
+        contract: faucet_factory
+        name: FaucetCreated
+      - callback: on_faucet_factory_ownership_transferred
+        contract: faucet_factory
         name: OwnershipTransferred
-      - callback: on_last_claim_updated
-        contract: faucet
-        name: LastClaimUpdated
-      - callback: on_config_updated
-        contract: faucet
+      - callback: on_faucet_class_hash_updated
+        contract: faucet_factory
+        name: FaucetClassHashUpdated
+      - callback: on_faucet_factory_config_updated
+        contract: faucet_factory
         name: ConfigUpdated
 
   # ---- For code generation only ----
@@ -189,6 +179,10 @@ indexes:
   #   template: game_session_events
   #   values:
   #     contract: game_session
+  # faucet_events_init:
+  #   template: faucet_events
+  #   values:
+  #     contract: faucet
 
 templates:
   pair_events:
@@ -322,6 +316,43 @@ templates:
       - callback: on_agent_created
         contract: <contract>
         name: AgentCreated
+
+  faucet_events:
+    kind: starknet.events
+    first_level: ${FAUCET_FACTORY_FIRST_LEVEL}
+    datasources:
+      - node
+    handlers:
+      - callback: on_token_added
+        contract: <contract>
+        name: TokenAdded
+      - callback: on_token_removed
+        contract: <contract>
+        name: TokenRemoved
+      - callback: on_token_claimed
+        contract: <contract>
+        name: Claim
+      - callback: on_user_whitelisted
+        contract: <contract>
+        name: AddedToWhitelist
+      - callback: on_user_removed_from_whitelist
+        contract: <contract>
+        name: RemovedFromWhitelist
+      - callback: on_faucet_initialized
+        contract: <contract>
+        name: FaucetInitialized
+      - callback: on_claim_interval_updated
+        contract: <contract>
+        name: ClaimIntervalUpdated
+      - callback: on_faucet_ownership_transferred
+        contract: <contract>
+        name: OwnershipTransferred
+      - callback: on_last_claim_updated
+        contract: <contract>
+        name: LastClaimUpdated
+      - callback: on_faucet_config_updated
+        contract: <contract>
+        name: ConfigUpdated
 
 hooks:
   calculate_game_metrics:

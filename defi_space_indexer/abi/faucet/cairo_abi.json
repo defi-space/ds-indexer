@@ -235,6 +235,10 @@
     "inputs": [
       {
         "type": "core::integer::u64",
+        "name": "claim_interval"
+      },
+      {
+        "type": "core::integer::u64",
         "name": "game_session_id"
       }
     ]

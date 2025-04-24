@@ -5,11 +5,11 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict
 
 
-class FarmFactoryInitializedPayload(BaseModel):
+class OwnershipTransferredPayload(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    farm_factory: int
-    owner: int
-    farm_class_hash: int
+    previous_owner: int
+    new_owner: int
+    faucet_factory: int
     block_timestamp: int

@@ -28,9 +28,6 @@ class Factory(Model):
     pair_contract_class_hash = fields.TextField()  # Current implementation
     config_history = fields.JSONField()  # List of {field, old_value, new_value, timestamp}
     
-    # Game integration
-    game_session_id = fields.IntField()  # ID for game session integration
-    
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()
 

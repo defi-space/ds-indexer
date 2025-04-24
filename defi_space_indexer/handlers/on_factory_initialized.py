@@ -12,7 +12,6 @@ async def on_factory_initialized(
     factory_address = f'0x{event.payload.factory_address:x}'
     owner = f'0x{event.payload.owner:x}'
     fee_to = f'0x{event.payload.fee_to:x}'
-    game_session_id = event.payload.game_session_id
     pair_contract_class_hash = f'0x{event.payload.pair_contract_class_hash:x}'
     block_timestamp = event.payload.block_timestamp
     
@@ -22,7 +21,6 @@ async def on_factory_initialized(
         ctx.logger.info(f"Factory {factory_address} already initialized, updating")
         factory.owner = owner
         factory.fee_to = fee_to
-        factory.game_session_id = game_session_id
         factory.pair_contract_class_hash = pair_contract_class_hash
         factory.updated_at = block_timestamp
         await factory.save()
@@ -33,7 +31,6 @@ async def on_factory_initialized(
         address=factory_address,
         owner=owner,
         fee_to=fee_to,
-        game_session_id=game_session_id,
         pair_contract_class_hash=pair_contract_class_hash,
         num_of_pairs=0,
         config_history=[],
@@ -43,5 +40,5 @@ async def on_factory_initialized(
     
     ctx.logger.info(
         f"Factory initialized: address={factory_address}, owner={owner}, "
-        f"fee_to={fee_to}, game_session_id={game_session_id}"
+        f"fee_to={fee_to}"
     )

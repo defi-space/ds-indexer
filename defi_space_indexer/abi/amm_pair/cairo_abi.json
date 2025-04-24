@@ -89,6 +89,17 @@
         "type": "function"
       },
       {
+        "name": "get_game_session_id",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u64"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
         "name": "mint",
         "inputs": [
           {
@@ -414,6 +425,10 @@
       {
         "type": "core::starknet::contract_address::ContractAddress",
         "name": "token_1"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "game_session_id"
       }
     ]
   },

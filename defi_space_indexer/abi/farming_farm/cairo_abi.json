@@ -363,6 +363,17 @@
         "type": "function"
       },
       {
+        "name": "game_session_id",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u64"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
         "name": "add_reward",
         "inputs": [
           {
@@ -525,6 +536,10 @@
       {
         "type": "core::starknet::contract_address::ContractAddress",
         "name": "penalty_receiver"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "game_session_id"
       }
     ]
   },
