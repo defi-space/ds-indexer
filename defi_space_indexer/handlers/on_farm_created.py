@@ -77,7 +77,7 @@ async def on_farm_created(
         config_history=[],
         active_rewards={},
         reward_tokens=[],
-        game_session_id=game_session_id,
+        game_session_id=int(game_session_id),
         created_at=block_timestamp,
         updated_at=block_timestamp,
         factory=farm_factory

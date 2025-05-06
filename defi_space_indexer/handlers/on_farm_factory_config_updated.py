@@ -31,7 +31,7 @@ async def on_farm_factory_config_updated(
         farm_factory.farm_class_hash = f'0x{new_value:x}'
     elif field_name_str == "game_session_id":
         # Use string representation for large integers to avoid overflow
-        farm_factory.game_session_id = str(new_value)
+        farm_factory.game_session_id = int(new_value)
     # Add other fields as needed
     
     # Update or initialize the config_history field

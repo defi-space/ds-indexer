@@ -80,7 +80,7 @@ class Farm(Model):
     config_history = fields.JSONField()  # List of {field, old_value, new_value, timestamp}
     
     # Game integration
-    game_session_id = fields.TextField()
+    game_session_id = fields.IntField()
     
     # Reward state
     active_rewards = fields.JSONField()  # Map<token, {rate, duration, finish, stored}>
