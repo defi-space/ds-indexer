@@ -60,6 +60,15 @@ class Pair(Model):
     token0_address = fields.TextField()
     token1_address = fields.TextField()
     
+    token0_symbol = fields.TextField()
+    token1_symbol = fields.TextField()
+
+    token0_name = fields.TextField()
+    token1_name = fields.TextField()
+
+    lp_token_symbol = fields.TextField()
+    lp_token_name = fields.TextField()
+
     # Current state
     reserve0 = fields.DecimalField(max_digits=100, decimal_places=0)
     reserve1 = fields.DecimalField(max_digits=100, decimal_places=0)

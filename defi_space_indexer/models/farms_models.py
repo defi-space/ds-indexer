@@ -153,6 +153,8 @@ class Reward(Model):
     address = fields.TextField()  # Reward token address
     farm_address = fields.TextField()  # Farm this reward belongs to
     
+    reward_token_symbol = fields.TextField()
+    reward_token_name = fields.TextField()
     # Reward configuration
     initial_amount = fields.TextField()  # Initial deposited reward amount
     unallocated_rewards = fields.TextField()

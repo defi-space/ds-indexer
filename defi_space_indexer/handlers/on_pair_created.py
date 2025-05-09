@@ -2,6 +2,7 @@ from defi_space_indexer import models as models
 from defi_space_indexer.types.amm_factory.starknet_events.pair_created import PairCreatedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
+from defi_space_indexer.utils import get_token_info
 
 
 async def on_pair_created(
@@ -29,6 +30,13 @@ async def on_pair_created(
     factory.updated_at = block_timestamp
     await factory.save()
     
+    # Fetch token names and symbols
+    token0_name, token0_symbol, token0_decimals = await get_token_info(token0_address)
+    token1_name, token1_symbol, token1_decimals = await get_token_info(token1_address)
+    
+    # LP token typically follows a format like "TOKEN0-TOKEN1 LP"
+    lp_token_name, lp_token_symbol, _ = await get_token_info(pair_address)
+    
     # Check if pair already exists
     pair = await models.Pair.get_or_none(address=pair_address)
     if pair:
@@ -36,6 +44,12 @@ async def on_pair_created(
         pair.factory_address = factory_address
         pair.token0_address = token0_address
         pair.token1_address = token1_address
+        pair.token0_symbol = token0_symbol
+        pair.token1_symbol = token1_symbol
+        pair.token0_name = token0_name
+        pair.token1_name = token1_name
+        pair.lp_token_symbol = lp_token_symbol
+        pair.lp_token_name = lp_token_name
         pair.game_session_id = game_session_id
         pair.updated_at = block_timestamp
         pair.factory = factory
@@ -65,6 +79,12 @@ async def on_pair_created(
         factory_address=factory_address,
         token0_address=token0_address,
         token1_address=token1_address,
+        token0_symbol=token0_symbol,
+        token1_symbol=token1_symbol,
+        token0_name=token0_name,
+        token1_name=token1_name,
+        lp_token_symbol=lp_token_symbol,
+        lp_token_name=lp_token_name,
         reserve0=0,
         reserve1=0,
         total_supply=0,
@@ -80,6 +100,6 @@ async def on_pair_created(
     
     ctx.logger.info(
         f"Pair created: address={pair_address}, factory={factory_address}, "
-        f"token0={token0_address}, token1={token1_address}, game_session_id={game_session_id}, "
-        f"added for indexing as {contract_name}"
+        f"token0={token0_address} ({token0_symbol}), token1={token1_address} ({token1_symbol}), "
+        f"game_session_id={game_session_id}, added for indexing as {contract_name}"
     )

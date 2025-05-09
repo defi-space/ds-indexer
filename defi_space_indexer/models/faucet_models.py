@@ -95,6 +95,9 @@ class FaucetToken(Model):
     address = fields.TextField()  # ContractAddress
     faucet_address = fields.TextField()  # Address of the faucet this token belongs to
     
+    token_symbol = fields.TextField()
+    token_name = fields.TextField()
+
     # Token distribution settings
     initial_amount = fields.DecimalField(max_digits=100, decimal_places=0)  # Total token amount
     amount_per_claim = fields.DecimalField(max_digits=100, decimal_places=0)  # Amount per claim

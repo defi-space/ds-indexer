@@ -2,6 +2,7 @@ from defi_space_indexer import models as models
 from defi_space_indexer.types.faucet.starknet_events.token_added import TokenAddedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
+from defi_space_indexer.utils import get_token_info
 
 
 async def on_token_added(
@@ -30,6 +31,9 @@ async def on_token_added(
         faucet.updated_at = block_timestamp
         await faucet.save()
     
+    # Fetch token name, symbol, and decimals
+    token_name, token_symbol, token_decimals = await get_token_info(token_address)
+    
     # Create or update the FaucetToken model
     token, created = await models.FaucetToken.get_or_create(
         address=token_address,
@@ -38,6 +42,8 @@ async def on_token_added(
             'initial_amount': amount,
             'amount_per_claim': claim_amount,
             'total_claimed_amount': 0,  # Initialize claimed amount to zero
+            'token_symbol': token_symbol,
+            'token_name': token_name,
             'created_at': block_timestamp,
             'updated_at': block_timestamp,
             'faucet': faucet,
@@ -47,6 +53,8 @@ async def on_token_added(
     if not created:
         token.initial_amount = amount
         token.amount_per_claim = claim_amount
+        token.token_symbol = token_symbol
+        token.token_name = token_name
         token.updated_at = block_timestamp
         token.faucet = faucet
         await token.save()
@@ -66,6 +74,6 @@ async def on_token_added(
     )
     
     ctx.logger.info(
-        f"Token added to faucet: faucet={faucet_address}, token={token_address}, "
-        f"amount={amount}, claim_amount={claim_amount}"
+        f"Token added to faucet: faucet={faucet_address}, token={token_address} ({token_symbol}), "
+        f"amount={amount}, claim_amount={claim_amount}, decimals={token_decimals}"
     )

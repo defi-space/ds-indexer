@@ -69,17 +69,39 @@ async def on_user_staked(
         
         await stake_window.save()
     
-    # Create user stake record
-    await models.UserStake.create(
+    # Check if a user stake record already exists
+    user_stake = await models.UserStake.get_or_none(
         user_address=user_address,
         agent_index=agent_index,
         stake_window_index=window_index,
-        session_address=session_address,
-        amount=amount,
-        created_at=block_timestamp,
-        updated_at=block_timestamp,
-        session=session,
+        session_address=session_address
     )
+    
+    if user_stake:
+        # Update existing stake
+        user_stake.amount += amount
+        user_stake.updated_at = block_timestamp
+        await user_stake.save()
+        ctx.logger.info(
+            f"Updated user stake: user={user_address}, agent={agent_index}, session={session_address}, "
+            f"window={window_index}, new_amount={user_stake.amount}"
+        )
+    else:
+        # Create new user stake record
+        await models.UserStake.create(
+            user_address=user_address,
+            agent_index=agent_index,
+            stake_window_index=window_index,
+            session_address=session_address,
+            amount=amount,
+            created_at=block_timestamp,
+            updated_at=block_timestamp,
+            session=session,
+        )
+        ctx.logger.info(
+            f"Created new user stake: user={user_address}, agent={agent_index}, session={session_address}, "
+            f"window={window_index}, amount={amount}"
+        )
     
     # Create game event record
     await models.GameEvent.create(
