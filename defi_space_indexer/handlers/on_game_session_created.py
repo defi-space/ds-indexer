@@ -2,7 +2,7 @@ from defi_space_indexer import models as models
 from defi_space_indexer.types.game_factory.starknet_events.game_session_created import GameSessionCreatedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
-
+from defi_space_indexer.utils import get_token_info
 
 async def on_game_session_created(
     ctx: HandlerContext,
@@ -68,6 +68,10 @@ async def on_game_session_created(
         values={'contract': contract_name}
     )
     
+    # Get token info
+    token_win_condition_name, token_win_condition_symbol, token_win_condition_decimals = await get_token_info(token_win_condition_address)
+    user_stake_token_name, user_stake_token_symbol, user_stake_token_decimals = await get_token_info(stake_token_address)
+    
     # Create a new game session record
     session = await models.GameSession.create(
         address=game_session_address,
@@ -75,6 +79,12 @@ async def on_game_session_created(
         user_stake_token_address=stake_token_address,
         token_win_condition_address=token_win_condition_address,
         token_win_condition_threshold=token_win_condition_threshold,
+        token_win_condition_name=token_win_condition_name,
+        token_win_condition_symbol=token_win_condition_symbol,
+        token_win_condition_decimals=token_win_condition_decimals,
+        user_stake_token_name=user_stake_token_name,
+        user_stake_token_symbol=user_stake_token_symbol,
+        user_stake_token_decimals=user_stake_token_decimals,
         owner=creator_address,
         burn_fee_percentage=burn_fee_percentage,
         platform_fee_percentage=platform_fee_percentage,

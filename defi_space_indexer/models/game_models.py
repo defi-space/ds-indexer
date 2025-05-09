@@ -63,6 +63,14 @@ class GameSession(Model):
     token_win_condition_address = fields.TextField()
     token_win_condition_threshold = fields.DecimalField(max_digits=100, decimal_places=0)
     
+    token_win_condition_name = fields.TextField()
+    token_win_condition_symbol = fields.TextField()
+    token_win_condition_decimals = fields.IntField()
+    
+    user_stake_token_name = fields.TextField()
+    user_stake_token_symbol = fields.TextField()
+    user_stake_token_decimals = fields.IntField()
+    
     # Game configuration
     owner = fields.TextField()
     burn_fee_percentage = fields.BigIntField()
