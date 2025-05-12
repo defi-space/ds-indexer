@@ -43,6 +43,7 @@ async def on_token_added(
             'amount_per_claim': claim_amount,
             'total_claimed_amount': 0,  # Initialize claimed amount to zero
             'token_symbol': token_symbol,
+            'game_session_id' : faucet.game_session_id,
             'token_name': token_name,
             'created_at': block_timestamp,
             'updated_at': block_timestamp,
@@ -56,6 +57,7 @@ async def on_token_added(
         token.token_symbol = token_symbol
         token.token_name = token_name
         token.updated_at = block_timestamp
+        token.game_session_id = faucet.game_session_id
         token.faucet = faucet
         await token.save()
     

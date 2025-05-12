@@ -98,6 +98,7 @@ class FaucetToken(Model):
     token_symbol = fields.TextField()
     token_name = fields.TextField()
 
+    game_session_id = fields.IntField() 
     # Token distribution settings
     initial_amount = fields.DecimalField(max_digits=100, decimal_places=0)  # Total token amount
     amount_per_claim = fields.DecimalField(max_digits=100, decimal_places=0)  # Amount per claim

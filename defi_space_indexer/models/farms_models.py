@@ -155,6 +155,9 @@ class Reward(Model):
     
     reward_token_symbol = fields.TextField()
     reward_token_name = fields.TextField()
+
+    game_session_id = fields.IntField() 
+    
     # Reward configuration
     initial_amount = fields.TextField()  # Initial deposited reward amount
     unallocated_rewards = fields.TextField()

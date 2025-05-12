@@ -52,6 +52,7 @@ async def on_reward_added(
             'rewards_duration': reward_duration,
             'period_finish': period_finish_str,
             'reward_rate': reward_rate_str,
+            'game_session_id' : farm.game_session_id,
             'last_update_time': block_timestamp,
             'reward_per_token_stored': reward_per_token_stored_str,
             'reward_token_symbol': token_symbol,
@@ -70,6 +71,7 @@ async def on_reward_added(
         reward.rewards_duration = reward_duration
         reward.period_finish = period_finish_str
         reward.reward_rate = reward_rate_str
+        reward.game_session_id = farm.game_session_id
         reward.last_update_time = block_timestamp
         reward.reward_per_token_stored = reward_per_token_stored_str
         reward.reward_token_symbol = token_symbol
