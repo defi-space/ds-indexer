@@ -2,6 +2,7 @@ from defi_space_indexer import models as models
 from defi_space_indexer.types.farming_factory.starknet_events.farm_created import FarmCreatedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
+from defi_space_indexer.utils import get_token_info
 
 
 async def on_farm_created(
@@ -23,6 +24,8 @@ async def on_farm_created(
     # Get transaction hash from event data
     transaction_hash = event.data.transaction_hash
     
+    lp_token_name, lp_token_symbol, _ = await get_token_info(lp_token_address)
+
     # Get the farm factory from the database
     farm_factory = await models.FarmFactory.get_or_none(address=factory_address)
     if not farm_factory:
@@ -77,6 +80,8 @@ async def on_farm_created(
         config_history=[],
         active_rewards={},
         reward_tokens=[],
+        lp_token_name=lp_token_name,
+        lp_token_symbol=lp_token_symbol,
         game_session_id=int(game_session_id),
         created_at=block_timestamp,
         updated_at=block_timestamp,

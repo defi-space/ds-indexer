@@ -69,6 +69,9 @@ class Farm(Model):
     total_staked = fields.TextField()  # Changed from DecimalField to TextField
     multiplier = fields.TextField()
     
+    lp_token_name = fields.TextField()
+    lp_token_symbol = fields.TextField()
+
     created_at = fields.BigIntField()
     updated_at = fields.BigIntField()
     
@@ -157,7 +160,7 @@ class Reward(Model):
     reward_token_name = fields.TextField()
 
     game_session_id = fields.IntField() 
-    
+
     # Reward configuration
     initial_amount = fields.TextField()  # Initial deposited reward amount
     unallocated_rewards = fields.TextField()
