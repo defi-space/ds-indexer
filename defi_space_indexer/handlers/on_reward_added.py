@@ -89,7 +89,7 @@ async def on_reward_added(
         'stored': reward_per_token_stored_str
     }
     farm.active_rewards = farm_active_rewards
-    
+    farm.remaining_amount = str(int(farm.remaining_amount) + int(reward_amount_str))
     # Update farm reward tokens list if not already in it
     if reward_token not in farm.reward_tokens:
         farm.reward_tokens.append(reward_token)
