@@ -68,6 +68,7 @@ async def on_reward_added(
         # Update reward data
         reward.initial_amount = reward_amount_str
         reward.unallocated_rewards = unallocated_rewards_str
+        reward.remaining_amount = reward_amount_str
         reward.rewards_duration = reward_duration
         reward.period_finish = period_finish_str
         reward.reward_rate = reward_rate_str
@@ -79,8 +80,21 @@ async def on_reward_added(
         reward.decimals = token_decimals
         reward.updated_at = block_timestamp
         await reward.save()
-    
-    # Update farm active rewards
+    else: 
+        reward.initial_amount = reward_amount_str
+        reward.remaining_amount = reward.remaining_amount + reward_amount_str
+        reward.unallocated_rewards = unallocated_rewards_str
+        reward.rewards_duration = reward_duration
+        reward.period_finish = period_finish_str
+        reward.reward_rate = reward_rate_str
+        reward.game_session_id = farm.game_session_id
+        reward.last_update_time = block_timestamp
+        reward.reward_per_token_stored = reward_per_token_stored_str
+        reward.reward_token_symbol = token_symbol
+        reward.reward_token_name = token_name
+        reward.decimals = token_decimals
+        reward.updated_at = block_timestamp
+        await reward.save()
     farm_active_rewards = farm.active_rewards or {}
     farm_active_rewards[reward_token] = {
         'rate': reward_rate_str,
@@ -89,7 +103,7 @@ async def on_reward_added(
         'stored': reward_per_token_stored_str
     }
     farm.active_rewards = farm_active_rewards
-    farm.remaining_amount = str(int(farm.remaining_amount) + int(reward_amount_str))
+
     # Update farm reward tokens list if not already in it
     if reward_token not in farm.reward_tokens:
         farm.reward_tokens.append(reward_token)
