@@ -68,22 +68,7 @@ async def on_reward_added(
         # Update reward data
         reward.initial_amount = reward_amount_str
         reward.unallocated_rewards = unallocated_rewards_str
-        reward.remaining_amount = reward_amount_str
-        reward.rewards_duration = reward_duration
-        reward.period_finish = period_finish_str
-        reward.reward_rate = reward_rate_str
-        reward.game_session_id = farm.game_session_id
-        reward.last_update_time = block_timestamp
-        reward.reward_per_token_stored = reward_per_token_stored_str
-        reward.reward_token_symbol = token_symbol
-        reward.reward_token_name = token_name
-        reward.decimals = token_decimals
-        reward.updated_at = block_timestamp
-        await reward.save()
-    else: 
-        reward.initial_amount = reward_amount_str
-        reward.remaining_amount = reward.remaining_amount + reward_amount_str
-        reward.unallocated_rewards = unallocated_rewards_str
+        reward.remaining_amount = str(int(reward.remaining_amount) + int(reward_amount_str))
         reward.rewards_duration = reward_duration
         reward.period_finish = period_finish_str
         reward.reward_rate = reward_rate_str
