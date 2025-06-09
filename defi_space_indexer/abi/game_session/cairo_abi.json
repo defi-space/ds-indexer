@@ -42,27 +42,17 @@
       },
       {
         "type": "core::integer::u256",
-        "name": "total_staked"
-      }
-    ]
-  },
-  {
-    "type": "struct",
-    "name": "ds::game::src::GameSession::StakeWindow",
-    "members": [
-      {
-        "type": "core::integer::u64",
-        "name": "start_time"
+        "name": "total_deposited"
       },
       {
-        "type": "core::integer::u64",
-        "name": "end_time"
+        "type": "core::integer::u256",
+        "name": "total_score"
       }
     ]
   },
   {
     "type": "struct",
-    "name": "ds::game::src::GameSession::UserStake",
+    "name": "ds::game::src::GameSession::UserDeposit",
     "members": [
       {
         "type": "core::integer::u256",
@@ -73,8 +63,12 @@
         "name": "agent_index"
       },
       {
-        "type": "core::integer::u32",
-        "name": "stake_window_index"
+        "type": "core::integer::u256",
+        "name": "accumulated_score"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "last_score_update"
       }
     ]
   },
@@ -83,24 +77,12 @@
     "name": "ds::game::src::GameSession::IGameSession",
     "items": [
       {
-        "name": "stake",
+        "name": "deposit",
         "inputs": [
           {
-            "type": "core::integer::u256",
-            "name": "amount"
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "caller"
           },
-          {
-            "type": "core::integer::u32",
-            "name": "agent_index"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external",
-        "type": "function"
-      },
-      {
-        "name": "unstake",
-        "inputs": [
           {
             "type": "core::integer::u256",
             "name": "amount"
@@ -116,14 +98,24 @@
       },
       {
         "name": "claim_and_exit",
-        "inputs": [],
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "caller"
+          }
+        ],
         "outputs": [],
         "state_mutability": "external",
         "type": "function"
       },
       {
         "name": "emergency_withdraw",
-        "inputs": [],
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "caller"
+          }
+        ],
         "outputs": [],
         "state_mutability": "external",
         "type": "function"
@@ -155,6 +147,18 @@
         "type": "function"
       },
       {
+        "name": "set_owner",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "new_owner"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external",
+        "type": "function"
+      },
+      {
         "name": "is_game_over",
         "inputs": [],
         "outputs": [
@@ -171,6 +175,28 @@
         "outputs": [
           {
             "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_game_start_timestamp",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u64"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_game_end_timestamp",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u64"
           }
         ],
         "state_mutability": "view",
@@ -215,7 +241,18 @@
         "type": "function"
       },
       {
-        "name": "get_agent_total_stakes",
+        "name": "get_winning_agent_index",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_agent_total_deposits",
         "inputs": [
           {
             "type": "core::integer::u32",
@@ -231,72 +268,23 @@
         "type": "function"
       },
       {
-        "name": "get_current_stake_window",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "(core::integer::u32, ds::game::src::GameSession::StakeWindow)"
-          }
-        ],
-        "state_mutability": "view",
-        "type": "function"
-      },
-      {
-        "name": "is_stake_window_active",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::bool"
-          }
-        ],
-        "state_mutability": "view",
-        "type": "function"
-      },
-      {
-        "name": "is_session_stake_window_active",
+        "name": "get_agent_total_score",
         "inputs": [
           {
             "type": "core::integer::u32",
-            "name": "stake_window_index"
+            "name": "agent_index"
           }
         ],
         "outputs": [
           {
-            "type": "core::bool"
+            "type": "core::integer::u256"
           }
         ],
         "state_mutability": "view",
         "type": "function"
       },
       {
-        "name": "get_session_stake_window",
-        "inputs": [
-          {
-            "type": "core::integer::u32",
-            "name": "window_index"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "ds::game::src::GameSession::StakeWindow"
-          }
-        ],
-        "state_mutability": "view",
-        "type": "function"
-      },
-      {
-        "name": "get_number_of_session_stake_windows",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::integer::u32"
-          }
-        ],
-        "state_mutability": "view",
-        "type": "function"
-      },
-      {
-        "name": "get_user_stakes",
+        "name": "get_user_deposits",
         "inputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress",
@@ -305,14 +293,14 @@
         ],
         "outputs": [
           {
-            "type": "core::array::Array::<ds::game::src::GameSession::UserStake>"
+            "type": "core::array::Array::<ds::game::src::GameSession::UserDeposit>"
           }
         ],
         "state_mutability": "view",
         "type": "function"
       },
       {
-        "name": "get_user_stake_count",
+        "name": "get_user_deposit_count",
         "inputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress",
@@ -322,6 +310,26 @@
         "outputs": [
           {
             "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "get_user_score",
+        "inputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress",
+            "name": "user"
+          },
+          {
+            "type": "core::integer::u32",
+            "name": "agent_index"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
           }
         ],
         "state_mutability": "view",
@@ -405,22 +413,11 @@
         "type": "function"
       },
       {
-        "name": "get_user_stake_token_address",
+        "name": "get_user_deposit_token_address",
         "inputs": [],
         "outputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress"
-          }
-        ],
-        "state_mutability": "view",
-        "type": "function"
-      },
-      {
-        "name": "get_winning_agent_index",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::integer::u32"
           }
         ],
         "state_mutability": "view",
@@ -438,7 +435,7 @@
         "type": "function"
       },
       {
-        "name": "get_total_stakes",
+        "name": "get_total_deposits",
         "inputs": [],
         "outputs": [
           {
@@ -456,11 +453,7 @@
     "inputs": [
       {
         "type": "core::starknet::contract_address::ContractAddress",
-        "name": "user_stake_token_address"
-      },
-      {
-        "type": "core::array::Array::<ds::game::src::GameSession::StakeWindow>",
-        "name": "stake_windows"
+        "name": "user_deposit_token_address"
       },
       {
         "type": "core::array::Array::<core::starknet::contract_address::ContractAddress>",
@@ -481,6 +474,10 @@
       {
         "type": "core::integer::u256",
         "name": "platform_fee_percentage"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "game_start_timestamp"
       }
     ]
   },
@@ -523,6 +520,11 @@
       },
       {
         "type": "core::integer::u256",
+        "name": "total_score",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u256",
         "name": "total_rewards",
         "kind": "data"
       },
@@ -535,34 +537,7 @@
   },
   {
     "type": "event",
-    "name": "ds::game::src::GameSession::GameSession::StakeWindowCreated",
-    "kind": "struct",
-    "members": [
-      {
-        "type": "core::integer::u32",
-        "name": "window_index",
-        "kind": "data"
-      },
-      {
-        "type": "core::integer::u64",
-        "name": "start_time",
-        "kind": "data"
-      },
-      {
-        "type": "core::integer::u64",
-        "name": "end_time",
-        "kind": "data"
-      },
-      {
-        "type": "core::integer::u64",
-        "name": "block_timestamp",
-        "kind": "data"
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "name": "ds::game::src::GameSession::GameSession::UserStaked",
+    "name": "ds::game::src::GameSession::GameSession::UserDeposited",
     "kind": "struct",
     "members": [
       {
@@ -581,40 +556,13 @@
         "kind": "data"
       },
       {
-        "type": "core::integer::u32",
-        "name": "window_index",
-        "kind": "data"
-      },
-      {
-        "type": "core::integer::u64",
-        "name": "block_timestamp",
-        "kind": "data"
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "name": "ds::game::src::GameSession::GameSession::UserUnstaked",
-    "kind": "struct",
-    "members": [
-      {
-        "type": "core::starknet::contract_address::ContractAddress",
-        "name": "user",
-        "kind": "data"
-      },
-      {
-        "type": "core::integer::u32",
-        "name": "agent_index",
+        "type": "core::integer::u256",
+        "name": "old_score",
         "kind": "data"
       },
       {
         "type": "core::integer::u256",
-        "name": "amount",
-        "kind": "data"
-      },
-      {
-        "type": "core::integer::u32",
-        "name": "window_index",
+        "name": "new_score",
         "kind": "data"
       },
       {
@@ -702,7 +650,7 @@
       },
       {
         "type": "core::starknet::contract_address::ContractAddress",
-        "name": "user_stake_token_address",
+        "name": "user_deposit_token_address",
         "kind": "data"
       },
       {
@@ -728,11 +676,6 @@
       {
         "type": "core::starknet::contract_address::ContractAddress",
         "name": "fee_recipient",
-        "kind": "data"
-      },
-      {
-        "type": "core::integer::u32",
-        "name": "number_of_stake_windows",
         "kind": "data"
       },
       {
@@ -796,12 +739,12 @@
       },
       {
         "type": "core::integer::u256",
-        "name": "old_total_staked",
+        "name": "old_total_deposited",
         "kind": "data"
       },
       {
         "type": "core::integer::u256",
-        "name": "new_total_staked",
+        "name": "new_total_deposited",
         "kind": "data"
       },
       {
@@ -845,6 +788,28 @@
   },
   {
     "type": "event",
+    "name": "ds::game::src::GameSession::GameSession::OwnershipTransferred",
+    "kind": "struct",
+    "members": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "previous_owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::starknet::contract_address::ContractAddress",
+        "name": "new_owner",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "block_timestamp",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
     "name": "ds::game::src::GameSession::GameSession::Event",
     "kind": "enum",
     "variants": [
@@ -859,18 +824,8 @@
         "kind": "nested"
       },
       {
-        "type": "ds::game::src::GameSession::GameSession::StakeWindowCreated",
-        "name": "StakeWindowCreated",
-        "kind": "nested"
-      },
-      {
-        "type": "ds::game::src::GameSession::GameSession::UserStaked",
-        "name": "UserStaked",
-        "kind": "nested"
-      },
-      {
-        "type": "ds::game::src::GameSession::GameSession::UserUnstaked",
-        "name": "UserUnstaked",
+        "type": "ds::game::src::GameSession::GameSession::UserDeposited",
+        "name": "UserDeposited",
         "kind": "nested"
       },
       {
@@ -906,6 +861,11 @@
       {
         "type": "ds::game::src::GameSession::GameSession::AgentCreated",
         "name": "AgentCreated",
+        "kind": "nested"
+      },
+      {
+        "type": "ds::game::src::GameSession::GameSession::OwnershipTransferred",
+        "name": "OwnershipTransferred",
         "kind": "nested"
       }
     ]

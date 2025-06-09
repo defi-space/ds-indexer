@@ -1,7 +1,10 @@
-from defi_space_indexer import models as models
-from defi_space_indexer.types.faucet_factory.starknet_events.faucet_factory_initialized import FaucetFactoryInitializedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
+
+from defi_space_indexer import models as models
+from defi_space_indexer.types.faucet_factory.starknet_events.faucet_factory_initialized import (
+    FaucetFactoryInitializedPayload,
+)
 
 
 async def on_faucet_factory_initialized(

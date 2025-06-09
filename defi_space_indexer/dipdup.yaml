@@ -286,15 +286,9 @@ templates:
       - callback: on_game_over
         contract: <contract>
         name: GameOver
-      - callback: on_stake_window_created
+      - callback: on_user_deposited
         contract: <contract>
-        name: StakeWindowCreated
-      - callback: on_user_staked
-        contract: <contract>
-        name: UserStaked
-      - callback: on_user_unstaked
-        contract: <contract>
-        name: UserUnstaked
+        name: UserDeposited
       - callback: on_emergency_withdraw
         contract: <contract>
         name: EmergencyWithdraw
@@ -316,6 +310,9 @@ templates:
       - callback: on_agent_created
         contract: <contract>
         name: AgentCreated
+      - callback: on_ownership_transferred
+        contract: <contract>
+        name: OwnershipTransferred
 
   faucet_events:
     kind: starknet.events
@@ -353,28 +350,3 @@ templates:
       - callback: on_faucet_config_updated
         contract: <contract>
         name: ConfigUpdated
-
-hooks:
-  calculate_game_metrics:
-    callback: calculate_game_metrics
-    atomic: False
-    args:
-      factory_address: str | None
-      session_address: str | None
-  active_staking_window:
-    callback: active_staking_window
-    atomic: False
-    args:
-      update_all: bool
-      session_address: str | None
-
-jobs:
-  game_metrics_update:
-    hook: calculate_game_metrics
-    interval: 60
-  active_staking_window:
-    hook: active_staking_window
-    interval: 30
-    args:
-      update_all: true
-      session_address: null

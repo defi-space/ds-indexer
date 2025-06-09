@@ -6,20 +6,6 @@
   },
   {
     "type": "struct",
-    "name": "ds_game::GameSession::StakeWindow",
-    "members": [
-      {
-        "type": "core::integer::u64",
-        "name": "start_time"
-      },
-      {
-        "type": "core::integer::u64",
-        "name": "end_time"
-      }
-    ]
-  },
-  {
-    "type": "struct",
     "name": "core::integer::u256",
     "members": [
       {
@@ -69,11 +55,7 @@
         "inputs": [
           {
             "type": "core::starknet::contract_address::ContractAddress",
-            "name": "user_stake_token_address"
-          },
-          {
-            "type": "core::array::Array::<ds_game::GameSession::StakeWindow>",
-            "name": "user_stake_windows"
+            "name": "user_deposit_token_address"
           },
           {
             "type": "core::array::Array::<core::starknet::contract_address::ContractAddress>",
@@ -94,6 +76,10 @@
           {
             "type": "core::integer::u256",
             "name": "platform_fee_percentage"
+          },
+          {
+            "type": "core::integer::u64",
+            "name": "game_start_timestamp"
           }
         ],
         "outputs": [],
@@ -339,7 +325,7 @@
       },
       {
         "type": "core::starknet::contract_address::ContractAddress",
-        "name": "stake_token",
+        "name": "deposit_token",
         "kind": "data"
       },
       {
@@ -375,6 +361,11 @@
       {
         "type": "core::integer::u32",
         "name": "total_sessions",
+        "kind": "data"
+      },
+      {
+        "type": "core::integer::u64",
+        "name": "game_start_timestamp",
         "kind": "data"
       },
       {

@@ -1,7 +1,8 @@
-from defi_space_indexer import models as models
-from defi_space_indexer.types.farming_factory.starknet_events.farm_created import FarmCreatedPayload
 from dipdup.context import HandlerContext
 from dipdup.models.starknet import StarknetEvent
+
+from defi_space_indexer import models as models
+from defi_space_indexer.types.farming_factory.starknet_events.farm_created import FarmCreatedPayload
 from defi_space_indexer.utils import get_token_info
 
 
@@ -20,22 +21,21 @@ async def on_farm_created(
     withdraw_penalty = event.payload.withdraw_penalty
     multiplier = event.payload.multiplier
     penalty_receiver = f'0x{event.payload.penalty_receiver:x}'
-    
+
     # Get transaction hash from event data
-    transaction_hash = event.data.transaction_hash
-    
+
     lp_token_name, lp_token_symbol, _ = await get_token_info(lp_token_address)
 
     # Get the farm factory from the database
     farm_factory = await models.FarmFactory.get_or_none(address=factory_address)
     if not farm_factory:
-        ctx.logger.warning(f"Farm factory {factory_address} not found when processing farm created event")
+        ctx.logger.warning(f'Farm factory {factory_address} not found when processing farm created event')
         return
-    
+
     # Check if the farm already exists
     farm = await models.Farm.get_or_none(address=farm_address)
     if farm:
-        ctx.logger.info(f"Farm {farm_address} already exists, updating details")
+        ctx.logger.info(f'Farm {farm_address} already exists, updating details')
         farm.factory_address = factory_address
         farm.lp_token_address = lp_token_address
         farm.farm_index = farm_index
@@ -46,24 +46,15 @@ async def on_farm_created(
         farm.updated_at = block_timestamp
         await farm.save()
         return
-    
+
     # Create contract and index for the new farm
     contract_name = f'farm_{farm_address[-8:]}'
-    
-    await ctx.add_contract(
-        name=contract_name,
-        kind='starknet',
-        address=farm_address,
-        typename='farming_farm'
-    )
-    
+
+    await ctx.add_contract(name=contract_name, kind='starknet', address=farm_address, typename='farming_farm')
+
     index_name = f'{contract_name}_events'
-    await ctx.add_index(
-        name=index_name,
-        template='farm_events',
-        values={'contract': contract_name}
-    )
-    
+    await ctx.add_index(name=index_name, template='farm_events', values={'contract': contract_name})
+
     # Create a new farm record
     farm = await models.Farm.create(
         address=farm_address,
@@ -85,16 +76,16 @@ async def on_farm_created(
         game_session_id=int(game_session_id),
         created_at=block_timestamp,
         updated_at=block_timestamp,
-        factory=farm_factory
+        factory=farm_factory,
     )
-    
+
     # Update farm count on the factory
     farm_factory.farm_count += 1
     farm_factory.updated_at = block_timestamp
     await farm_factory.save()
-    
+
     ctx.logger.info(
-        f"Farm created: farm={farm_address}, factory={factory_address}, "
-        f"lp_token={lp_token_address}, index={farm_index}, "
-        f"added for indexing as {contract_name}"
+        f'Farm created: farm={farm_address}, factory={factory_address}, '
+        f'lp_token={lp_token_address}, index={farm_index}, '
+        f'added for indexing as {contract_name}'
     )
