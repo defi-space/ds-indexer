@@ -10,7 +10,7 @@ SELECT
     a.agent_index,
     COALESCE(sc.total_score, 0) as total_score,
     COALESCE(sc.resource_balance_score, 0) as resource_balance_score,
-    COALESCE(sc.lp_balance_score, 0) as lp_balance_score,
+    COALESCE(sc.lp_position_score, 0) as lp_position_score,
     COALESCE(sc.farming_score, 0) as farming_score,
     sc.last_calculated_at
 FROM agent a
