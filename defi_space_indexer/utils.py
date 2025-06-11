@@ -40,6 +40,17 @@ async def get_token_info(address: str) -> tuple:
         # Create a client to interact with Starknet
         client = FullNodeClient(node_url=RPC_URL)
 
+        # Ensure address is properly formatted as hex string
+        if isinstance(address, int):
+            address = f"0x{address:x}"
+        elif isinstance(address, str) and not address.startswith('0x'):
+            # If it's a string but doesn't start with 0x, assume it's an integer string
+            try:
+                address = f"0x{int(address):x}"
+            except ValueError:
+                # If conversion fails, assume it's already a hex string without 0x
+                address = f"0x{address}"
+
         logger.info(f'Trying token {address}')
         contract = await Contract.from_address(address=address, provider=client)
 

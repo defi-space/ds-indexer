@@ -350,3 +350,13 @@ templates:
       - callback: on_faucet_config_updated
         contract: <contract>
         name: ConfigUpdated
+
+hooks:
+  calculate_agent_progression_scores:
+    callback: calculate_agent_progression_scores
+    atomic: false
+
+jobs:
+  progression_scores_every_5min:
+    hook: calculate_agent_progression_scores
+    crontab: "*/5 * * * *"  # Run every 5 minutes

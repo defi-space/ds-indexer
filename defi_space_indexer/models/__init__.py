@@ -24,6 +24,7 @@ from defi_space_indexer.models.faucet_models import FaucetFactory  # Core Models
 from defi_space_indexer.models.faucet_models import FaucetToken
 from defi_space_indexer.models.faucet_models import WhitelistedUser
 from defi_space_indexer.models.game_models import Agent
+from defi_space_indexer.models.game_models import AgentScore
 from defi_space_indexer.models.game_models import GameEvent  # Event Models
 from defi_space_indexer.models.game_models import GameEventType
 from defi_space_indexer.models.game_models import GameFactory  # Core Models
@@ -32,6 +33,7 @@ from defi_space_indexer.models.game_models import UserDeposit
 
 __all__ = [
     'Agent',
+    'AgentScore',
     'AgentStake',
     # Farming Event Models
     'AgentStakeEvent',

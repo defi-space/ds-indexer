@@ -168,6 +168,51 @@ class UserDeposit(Model):
         unique_together = [('user_address', 'agent_index', 'session_address')]
 
 
+class AgentScore(Model):
+    """
+    Tracks progression scores for each agent based on their onchain state.
+    Scores are calculated by evaluating resource balances, LP positions, and farming activities.
+
+    Key responsibilities:
+    - Calculates resource balance scores (wallet + LP + farms)
+    - Tracks LP position scores (wallet + staked)
+    - Measures farming scores (staked LP + pending rewards)
+    - Provides breakdown by category and total score
+
+    Scoring categories:
+    - Resource Balance: Direct token holdings weighted by token importance
+    - LP Position: LP token amounts weighted by pool type
+    - Farming Score: Staked amounts and pending rewards weighted by farm importance
+
+    Updated by:
+    - Progression score calculation hook
+    - Triggered periodically or on demand
+    """
+
+    id = fields.IntField(primary_key=True)
+    agent_address = fields.TextField()  # Agent contract address
+    session_address = fields.TextField()  # Game session address
+    agent_index = fields.IntField()  # Agent index in the game session
+
+    # Score breakdown by category
+    resource_balance_score = fields.DecimalField(max_digits=100, decimal_places=0, default=0)
+    lp_position_score = fields.DecimalField(max_digits=100, decimal_places=0, default=0)
+    farming_score = fields.DecimalField(max_digits=100, decimal_places=0, default=0)
+    
+    # Total aggregated score
+    total_score = fields.DecimalField(max_digits=100, decimal_places=0, default=0)
+
+    # Calculation metadata
+    last_calculated_at = fields.BigIntField()
+
+    # Timestamps
+    created_at = fields.BigIntField()
+    updated_at = fields.BigIntField()
+
+    class Meta:
+        unique_together = [('agent_address', 'session_address')]
+
+
 class GameEventType(Enum):
     USER_DEPOSITED = 'USER_DEPOSITED'
     EMERGENCY_WITHDRAW = 'EMERGENCY_WITHDRAW'
