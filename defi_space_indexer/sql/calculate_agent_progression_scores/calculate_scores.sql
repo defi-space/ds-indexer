@@ -13,7 +13,7 @@ SELECT
     COALESCE(sc.lp_position_score, 0) as lp_position_score,
     COALESCE(sc.farming_score, 0) as farming_score,
     sc.last_calculated_at,
-    sc.score_breakdown
+    
 FROM agent a
 LEFT JOIN agent_score sc ON a.address = sc.agent_address AND a.session_address = sc.session_address;
 

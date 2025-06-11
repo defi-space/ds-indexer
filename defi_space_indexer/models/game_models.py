@@ -202,12 +202,8 @@ class AgentScore(Model):
     # Total aggregated score
     total_score = fields.DecimalField(max_digits=100, decimal_places=0, default=0)
 
-    # Detailed breakdown (JSON for flexibility)
-    score_breakdown = fields.JSONField(default=dict)  # Detailed scoring data
-    
     # Calculation metadata
     last_calculated_at = fields.BigIntField()
-    calculation_block_number = fields.BigIntField(null=True)
 
     # Timestamps
     created_at = fields.BigIntField()
