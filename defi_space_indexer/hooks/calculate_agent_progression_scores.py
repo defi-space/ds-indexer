@@ -152,6 +152,8 @@ async def calculate_agent_progression_scores(
     - Total Score: Resource + LP + Pending Rewards scores
     
     All calculations are done via RPC calls for real-time accuracy.
+    
+    Note: Skips calculation for suspended or completed games to save resources.
     """
     ctx.logger.info("Starting agent progression score calculation")
     
@@ -165,7 +167,37 @@ async def calculate_agent_progression_scores(
     
     ctx.logger.info(f"Processing {len(agents)} agents")
     
+    # Group agents by session to check game status efficiently
+    agents_by_session = {}
     for agent in agents:
+        if agent.session_address not in agents_by_session:
+            agents_by_session[agent.session_address] = []
+        agents_by_session[agent.session_address].append(agent)
+    
+    # Check game status for each session and process only active games
+    active_agents = []
+    skipped_sessions = 0
+    
+    for session_address, session_agents in agents_by_session.items():
+        try:
+            session = await GameSession.get(address=session_address)
+            
+            # Skip calculation if game is suspended or over
+            if session.game_suspended or session.game_over:
+                ctx.logger.info(f"Skipping session {session_address}: suspended={session.game_suspended}, over={session.game_over}")
+                skipped_sessions += 1
+                continue
+                
+            # Add agents from active sessions to processing list
+            active_agents.extend(session_agents)
+            
+        except Exception as e:
+            ctx.logger.error(f"Error checking session status for {session_address}: {e}")
+            continue
+    
+    ctx.logger.info(f"Processing {len(active_agents)} agents from active games, skipped {skipped_sessions} suspended/completed sessions")
+    
+    for agent in active_agents:
         try:
             # Calculate scores via RPC calls
             resource_score = await calculate_resource_balance_score_rpc(ctx, agent.address, agent.session_address)
