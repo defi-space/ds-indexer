@@ -78,7 +78,7 @@ TOKEN_INFO_CACHE: Dict[str, Tuple[str, str, int]] = {}
 # Token weights configuration
 TOKEN_WEIGHTS = {
     # High value tokens
-    'He3': 100,
+    'He3': 500,
     
     # Medium value tokens  
     'GPH': 50,
