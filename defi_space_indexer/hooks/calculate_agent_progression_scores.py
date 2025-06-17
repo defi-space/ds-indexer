@@ -16,7 +16,7 @@ Total Score = Resource Balance Score + LP Token Balance Score + Pending Rewards 
    Formula: Σ(token_balance × token_weight)
    
    Token Weights:
-   • He3: 100 (highest value)
+   • He3: 500 (highest value)
    • GPH, Y: 50 (medium value)
    • GRP, Dy: 25 (lower value)
    • wD, C, Nd: 5 (base tokens)
