@@ -6,7 +6,7 @@ The score reflects an agent's overall participation and success in the DeFi ecos
 
 🎯 SCORING METHODOLOGY:
 
-Total Score = Resource Balance Score + LP Token Balance Score + Pending Rewards Score
+Total Score = Resource Balance Score + LP Token Balance Score + Farming Score
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -16,10 +16,10 @@ Total Score = Resource Balance Score + LP Token Balance Score + Pending Rewards 
    Formula: Σ(token_balance × token_weight)
    
    Token Weights:
-   • He3: 500 (highest value)
-   • GPH, Y: 50 (medium value)
-   • GRP, Dy: 25 (lower value)
-   • wD, C, Nd: 5 (base tokens)
+   • He3: 100 (highest value)
+   • GPH, Y: 5 (medium value)
+   • GRP, Dy: 2 (lower value)
+   • wD, C, Nd: 1 (base tokens)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -29,21 +29,23 @@ Total Score = Resource Balance Score + LP Token Balance Score + Pending Rewards 
    Formula: Σ(lp_balance × pool_weight)
    
    Pool Weights:
-   • He3/wD: 50 (premium pool)
-   • He3/GPH: 45
-   • GPH/Y: 40
-   • GRP/Dy: 30
-   • wD/C: 20
-   • C/Nd: 20 (base pools)
+   • He3/wD: 10 (premium pool)
+   • He3/GPH: 9
+   • GPH/Y: 5
+   • GRP/Dy: 2
+   • wD/C: 1
+   • C/Nd: 1 (base pools)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🚜 3. PENDING REWARDS SCORE
-   Pending/claimable rewards from farms via RPC calls:
+🚜 3. FARMING SCORE
+   Farming rewards and participation via RPC calls:
    
-   Formula: Σ(pending_rewards × token_weight)
+   Formula: Σ((pending_rewards × token_weight) × farm_multiplier)
    
-   Reward Weights: Use same token weights as resource balances
+   Where farm_multiplier = 1 + Σ(reward_token_weight / 10)
+   
+   This rewards both pending rewards AND participation in high-value farms
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -66,7 +68,7 @@ from dipdup.context import HookContext
 from starknet_py.contract import Contract
 from starknet_py.net.full_node_client import FullNodeClient
 
-from defi_space_indexer.models import Agent, AgentScore, AgentStake, Farm, GameSession, Pair
+from defi_space_indexer.models import Agent, AgentScore, AgentStake, Farm, GameSession, Pair, Reward
 from defi_space_indexer.utils import get_token_info
 
 # Get the node URL from environment variables
@@ -78,30 +80,30 @@ TOKEN_INFO_CACHE: Dict[str, Tuple[str, str, int]] = {}
 # Token weights configuration
 TOKEN_WEIGHTS = {
     # High value tokens
-    'He3': 500,
+    'He3': 100,
     
     # Medium value tokens  
-    'GPH': 50,
-    'Y': 50,
+    'GPH': 5,
+    'Y': 5,
     
     # Lower value tokens
-    'GRP': 25,
-    'Dy': 25,
+    'GRP': 2,
+    'Dy': 2,
     
     # Base tokens
-    'wD': 5,
-    'C': 5,
-    'Nd': 5,
+    'wD': 1,
+    'C': 1,
+    'Nd': 1,
 }
 
 # LP Pool weights for LP token balances
 LP_POOL_WEIGHTS = {
-    'He3/wD': 50,
-    'He3/GPH': 45,
-    'GPH/Y': 40,
-    'GRP/Dy': 30,
-    'wD/C': 20,
-    'C/Nd': 20,
+    'He3/wD': 10,      # He3 pools get highest weight
+    'He3/GPH': 9,
+    'GPH/Y': 5,        # Medium value pools
+    'GRP/Dy': 2,       # Lower value pools
+    'wD/C': 1,         # Base pools
+    'C/Nd': 1,
 }
 
 
@@ -148,8 +150,8 @@ async def calculate_agent_progression_scores(
     Scoring Logic:
     - Resource Balance Score: Direct wallet token balances * token weights (via RPC)
     - LP Token Balance Score: LP token balances * pool weights (via RPC)  
-    - Pending Rewards Score: Pending farm rewards * token weights (via RPC)
-    - Total Score: Resource + LP + Pending Rewards scores
+    - Farming Score: (Pending farm rewards * token weights) * farm multiplier (via RPC)
+    - Total Score: Resource + LP + Farming scores
     
     All calculations are done via RPC calls for real-time accuracy.
     
@@ -380,7 +382,7 @@ async def calculate_lp_balance_score_rpc(ctx: HookContext, agent_address: str, s
                     if pool_key not in LP_POOL_WEIGHTS:
                         pool_key = f"{pair.token1_symbol}/{pair.token0_symbol}"
                     
-                    weight = LP_POOL_WEIGHTS.get(pool_key, 10)
+                    weight = LP_POOL_WEIGHTS.get(pool_key, 1)
                     score = normalized_balance * Decimal(str(weight))
                     total_score += score
                     
@@ -395,8 +397,12 @@ async def calculate_lp_balance_score_rpc(ctx: HookContext, agent_address: str, s
 
 async def calculate_pending_rewards_score_rpc(ctx: HookContext, agent_address: str, session_address: str) -> Decimal:
     """
-    Calculate pending rewards score using direct RPC calls to farm contracts.
+    Calculate farming score using direct RPC calls to farm contracts.
     Only considers farms from the current game session.
+    
+    This includes:
+    1. Pending rewards from staked positions
+    2. Farm reward token multiplier based on the farm's reward tokens
     """
     total_score = Decimal(0)
     
@@ -408,35 +414,56 @@ async def calculate_pending_rewards_score_rpc(ctx: HookContext, agent_address: s
         # Get agent's stakes in farms from the same game session
         stakes = await AgentStake.filter(agent_address=agent_address)
         
-        session_farms = []
+        session_farm_addresses = []
         for stake in stakes:
             farm = await Farm.get(address=stake.farm_address)
             if farm.game_session_id == game_session_id:
-                session_farms.append(stake.farm_address)
+                session_farm_addresses.append(stake.farm_address)
         
-        for farm_address in session_farms:
+        for farm_address in session_farm_addresses:
             try:
+                # Get the farm to access reward token information
+                farm = await Farm.get(address=farm_address)
+                
+                # Calculate farm reward token multiplier using existing Reward models
+                farm_multiplier = Decimal(1)  # Base multiplier
+                
+                # Get reward models for this farm to access cached token symbols
+                rewards = await Reward.filter(farm_address=farm_address)
+                for reward in rewards:
+                    try:
+                        token_weight = TOKEN_WEIGHTS.get(reward.reward_token_symbol, 1)
+                        # Add token weight to multiplier (higher value tokens increase farm value)
+                        farm_multiplier += Decimal(str(token_weight)) / Decimal(10)  # Scale down to keep multiplier reasonable
+                    except Exception:
+                        continue
+                
                 # Get pending rewards via RPC
                 pending_rewards = await get_farm_pending_rewards(agent_address, farm_address)
                 
+                farm_pending_score = Decimal(0)
                 for token_address, reward_amount in pending_rewards.items():
                     try:
                         # Get token info and normalize
                         _, symbol, decimals = await get_cached_token_info(token_address)
                         normalized_reward = normalize_token_amount(reward_amount, decimals)
                         
-                        # Apply weight
+                        # Apply token weight
                         weight = TOKEN_WEIGHTS.get(symbol, 1)
-                        score = normalized_reward * Decimal(str(weight))
-                        total_score += score
+                        reward_score = normalized_reward * Decimal(str(weight))
+                        farm_pending_score += reward_score
                         
                     except Exception:
                         continue
+                
+                # Apply farm multiplier to the pending rewards score
+                farm_total_score = farm_pending_score * farm_multiplier
+                total_score += farm_total_score
                 
             except Exception:
                 continue
         
     except Exception as e:
-        ctx.logger.error(f"Error calculating pending rewards score: {e}")
+        ctx.logger.error(f"Error calculating farming score: {e}")
     
     return total_score 
